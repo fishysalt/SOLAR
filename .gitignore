@@ -1,0 +1,92 @@
+# ========== 敏感配置（绝不提交）==========
+.env
+*.key
+*.pem
+*.cert
+*.p12
+*.jks
+
+# ========== Agent 配置文件（包含本地路径等）==========
+conductor/config.yaml
+creator/tools/mcp/config.json
+
+# ========== 运行时数据（不提交）==========
+shared/temp/
+*/data/input/
+*/data/output/
+*/logs/
+*.db
+*.sqlite3
+*.sqlite
+
+# ========== 本地记忆数据（每个开发者独立）==========
+*/memory/long_term/
+*/memory/short_term.json
+*/rag/*.json
+!*/rag/*.txt
+!*/rag/*.md
+
+# ========== Python 相关 ==========
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+SOLAR/
+SOLAR_MA/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ==========  IDE 配置 ==========
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.idea/
+*.iml
+.project
+.pydevproject
+
+# ========== 临时文件 ==========
+*.log
+*.tmp
+*.bak
+*.backup
+*.cache
+*.pid
+*.seed
+*.pid.lock
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========== 测试和覆盖率 ==========
+.coverage
+.coverage.*
+.cover
+htmlcov/
+.tox/
+*.cover
+
+# ========== 打包文件 ==========
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# ========== Jupyter Notebook ==========
+.ipynb_checkpoints/
+
+# ========== 本地开发配置 ==========
+.local/
+.env.local
+.env.*.local

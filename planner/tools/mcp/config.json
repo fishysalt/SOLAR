@@ -1,0 +1,14 @@
+{
+    "servers": [
+        {
+            "name": "Wan26Media",
+            "type": "http",
+            "baseUrl": "https://dashscope.aliyuncs.com/api/v1/mcps/Wan26Media/mcp",
+            "headers": {
+                "Authorization": "Bearer sk-3748f5a12be9474db8cd9e0ab2ba5287"
+            },
+            "enabled": true,
+            "description": "阿里云百炼官方图像/视频生成 MCP 服务（万相2.6）"
+        }
+    ]
+}

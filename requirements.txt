@@ -1,0 +1,9 @@
+openai>=1.0.0
+python-dotenv>=1.0.0
+gradio>=6.0.0
+pyyaml>=6.0
+fastapi>=0.104.0
+uvicorn>=0.24.0
+aiohttp>=3.9.0
+# MCP 依赖（用于外部工具集成）
+mcp>=0.1.0
