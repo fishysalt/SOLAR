@@ -1,4 +1,4 @@
-"""Creator 核心逻辑 - 接入 LLM + 长期记忆 + RAG + 文件传输 + MCP 外部工具"""
+"""Scavenger 核心逻辑 - 接入 LLM + 长期记忆 + RAG + 文件传输 + MCP 外部工具"""
 
 import sys
 import json
@@ -15,15 +15,13 @@ from conductor.utils import log_with_timestamp
 from .rag.knowledge_base import KnowledgeBase
 
 
-class CreatorAgent:
+class ScavengerAgent:
     """具备视频生成、3D建模、搜索能力的从 Agent，支持 MCP 外部工具"""
     
     def __init__(self):
-        self.name = "creator"
-        self.display_name = "✨ Creator"
+        self.name = "scavenger"
+        self.display_name = "✨ Scavenger"
         self.capabilities = [
-            "video_generation",
-            "model_generation", 
             "web_search"
         ]
         
@@ -65,13 +63,13 @@ class CreatorAgent:
         self.memory = AgentMemory(self.name, memory_dir, llm_callback=llm_summary_callback)
         
         # ========== 工具注册器（统一管理本地工具 + MCP 外部工具）==========
-        from .tools import get_tool_registry, init_creator_tools
+        from .tools import get_tool_registry, init_scavenger_tools
         self.tools = get_tool_registry()
         
-        # init_creator_tools() 会同时注册：
+        # init_scavenger_tools() 会同时注册：
         # 1. builtin 工具（记忆操作等本地工具）
         # 2. MCP 外部工具（从 config.json 读取并自动发现）
-        init_creator_tools()
+        init_scavenger_tools()
         
         self.current_task = None
         self.input_dir = Path(__file__).parent / "data" / "input"
@@ -208,13 +206,10 @@ class CreatorAgent:
     {tools_info}
 
     ## 你的能力
-    你是 Creator Agent，专门负责内容生成。你的能力包括：
-    1. 调用mcp server的工具完成生成型任务
-    2. 3D建模 - 根据描述生成 GLB 格式的 3D 模型
-    3. 网页搜索 - 搜索互联网信息
-    4. 视频生成 - 根据描述生成视频
-    5. 图像生成 - 根据描述生成图像
-
+    你是 Scavenger Agent，专门负责资源搜索和获取。你的能力包括：
+    1. 调用mcp server的工具完成搜索任务
+    2. 网页搜索 - 搜索互联网信息
+ 
     ## 使用知识库的指引（重要）
     - 当上面的「相关知识库信息」中有内容时，**优先使用这些知识**回答用户问题
     - 知识库中的信息是经过验证的权威内容，不要自行编造替代
@@ -418,11 +413,9 @@ class CreatorAgent:
         instruction_lower = instruction.lower()
         
         if "自我介绍" in instruction_lower or "介绍" in instruction_lower:
-            response = f"""✨ 你好！我是 Creator Agent，我的能力包括：
+            response = f"""✨ 你好！我是 Scavenger Agent，我的能力包括：
 
-1. **视频生成** - 根据描述生成视频内容
-2. **3D建模** - 生成 GLB 格式的 3D 模型
-3. **网页搜索** - 搜索互联网信息
+1. **网页搜索** - 搜索互联网信息
 
 目前这些功能正在开发中，敬请期待！"""
         else:
@@ -540,11 +533,11 @@ class CreatorAgent:
 
 
 # 单例
-_creator = None
+scavenger = None
 
 
-def get_creator() -> CreatorAgent:
-    global _creator
-    if _creator is None:
-        _creator = CreatorAgent()
-    return _creator
+def get_scavenger() -> ScavengerAgent:
+    global scavenger
+    if scavenger is None:
+        scavenger = ScavengerAgent()
+    return scavenger

@@ -32,15 +32,14 @@ class AgentRegistry:
                 "capabilities": ["video_generation", "model_generation", "web_search"],
                 "description": "视频生成、3D建模、网页搜索"
             },
-            # 预留其他 Agent
-            # "visualization": {
-            #     "name": "visualization",
-            #     "display_name": "📊 Visualization",
-            #     "api_port": 7862,
-            #     "ui_port": 7962,
-            #     "capabilities": ["data_viz", "chart_generation"],
-            #     "description": "数据可视化"
-            # }
+            "scavenger": {
+                "name": "scavenger",
+                "display_name": "🔍 Scavenger",
+                "api_port": 7862,
+                "ui_port": 7962,
+                "capabilities": ["web_scraping", "data_extraction"],
+                "description": "网络爬虫、数据提取"
+            },            
         }
         
         # 运行时状态（缓存，但每次操作前会刷新）

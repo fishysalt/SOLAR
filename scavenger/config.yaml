@@ -1,0 +1,27 @@
+# Scavenger Agent 配置
+
+name: scavenger
+display_name: "✨ Scavenger"
+description: "资源搜索，资源获取"
+
+# 能力列表
+capabilities:
+  - name: web_search
+    description: "搜索互联网信息"
+    input: "关键词"
+    output: "搜索结果"
+
+# 模型配置
+model:
+  provider: deepseek
+  name: deepseek-v4-flash
+  temperature: 0.7
+
+# 通信配置
+communication:
+  timeout: 60
+
+# 记忆配置
+memory:
+  short_term_window: 30
+  long_term_enabled: true

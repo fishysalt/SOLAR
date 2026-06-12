@@ -38,10 +38,10 @@ class MCPServerManager:
         print("🔌 MCP Server 管理器已初始化")
     
     def _load_env_file(self):
-        """加载 creator 目录下的 .env 文件"""
-        current_dir = Path(__file__).parent  # creator/tools/mcp
-        creator_root = current_dir.parent.parent  # creator/
-        env_path = creator_root / ".env"
+        """加载 scavenger 目录下的 .env 文件"""
+        current_dir = Path(__file__).parent  # scavenger/tools/mcp
+        scavenger_root = current_dir.parent.parent  # scavenger/
+        env_path = scavenger_root / ".env"
         
         if env_path.exists():
             load_dotenv(dotenv_path=env_path)

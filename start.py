@@ -26,7 +26,17 @@ def start_all():
     
     import time
     time.sleep(2)
-    
+    print("📡 启动 Scavenger Agent...")
+    scavenger_proc = subprocess.Popen(
+        [sys.executable, str(PROJECT_ROOT / "scavenger" / "ui.py")],
+        cwd=str(PROJECT_ROOT),
+        env={**subprocess.os.environ, "AGENT_PORT": "7862"}
+    )
+    processes.append(("Scavenger", scavenger_proc))
+
+    time.sleep(2)
+
+
     print("🎵 启动 Conductor 主控...")
     conductor_proc = subprocess.Popen(
         [sys.executable, str(PROJECT_ROOT / "conductor" / "ui.py")],
@@ -39,6 +49,8 @@ def start_all():
     print("   🎵 Conductor UI: http://localhost:7860")
     print("   ✨ Creator UI: http://localhost:7961")
     print("   ✨ Creator API: http://localhost:7861")
+    print("   🔍 Scavenger UI: http://localhost:7962")
+    print("   🔍 Scavenger API: http://localhost:7862")
     print("=" * 50)
     print("\n按 Ctrl+C 停止...")
     

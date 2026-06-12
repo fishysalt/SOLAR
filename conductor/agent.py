@@ -92,13 +92,19 @@ class ConductorAgent:
         }
     
     def _build_system_prompt(self) -> str:
+        """构建系统提示"""
         permanent_prompt = self.memory.get_permanent_prompt()
+        
+        emotion_rules = self.memory.permanent.get("emotion_rules", "")
+        
         sub_agent_info = self._get_sub_agent_info()
         tools_info = self.tools.get_tools_summary() if self.tools.list_tools() else ""
-        
+
         return f"""{permanent_prompt}
 
 {sub_agent_info}
+
+{emotion_rules}
 
 {tools_info}
 
@@ -113,7 +119,7 @@ class ConductorAgent:
 ## 当前时间
 {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 """
-    
+ 
     def _get_sub_agent_info(self) -> str:
         """获取子 Agent 信息（从注册表）"""
         agents = self.registry.get_all_agents()
@@ -248,7 +254,7 @@ class ConductorAgent:
         async def _call():
             result = await self.registry.send_task(agent_name, instruction)
             if result.get("status") == "success":
-                return result.get("message", "任务完成")
+                return result.get("message", "任务完成") 
             else:
                 return f"❌ 失败: {result.get('error', '未知错误')}"
         
@@ -262,34 +268,41 @@ class ConductorAgent:
                 return loop.run_until_complete(_call())
         except RuntimeError:
             return asyncio.run(_call())
-    
     def get_sub_agent_status_sync(self, agent_name: str = None) -> str:
-        """同步获取子 Agent 状态"""
-        import asyncio
-        
-        async def _get():
-            if agent_name:
-                return await self.registry.check_agent_status(agent_name)
-            else:
-                return await self.registry.get_all_status()
-        
-        result = asyncio.run(_get())
-        
+        """同步获取子 Agent 状态（使用 requests，避免 asyncio 问题）"""
+        import requests
+    
         if agent_name:
-            status = result
-            if status["status"] == "running":
-                return f"✅ {agent_name}: 运行中\n   API: {status['api_url']}\n   响应时间: {status['response_time']:.2f}s"
-            else:
-                return f"❌ {agent_name}: {status['status']}\n   {status.get('error', '')}"
+            config = self.registry._config.get(agent_name)
+            if not config:
+                return f"❌ 未知 Agent: {agent_name}"
+        
+            api_url = f"http://localhost:{config['api_port']}"
+            try:
+                resp = requests.get(f"{api_url}/api/health", timeout=3)
+                if resp.status_code == 200:
+                    return f"✅ {agent_name}: 运行中\n   API: {api_url}"
+                else:
+                    return f"❌ {agent_name}: 未响应 (HTTP {resp.status_code})"
+            except requests.exceptions.ConnectionError:
+                return f"❌ {agent_name}: 未启动 (无法连接 {api_url})"
+            except Exception as e:
+                return f"❌ {agent_name}: 错误 - {str(e)}"
         else:
-            lines = ["## 子 Agent 状态（实时检测）\n"]
-            for name, status in result.items():
-                icon = "🟢" if status["status"] == "running" else "⚫"
-                lines.append(f"{icon} **{name}**: {status['status']}")
-                if status.get("api_url"):
-                    lines.append(f"   API: {status['api_url']}")
+            lines = ["## 子 Agent 状态\n"]
+            for name, config in self.registry._config.items():
+                api_url = f"http://localhost:{config['api_port']}"
+                try:
+                    resp = requests.get(f"{api_url}/api/health", timeout=2)
+                    if resp.status_code == 200:
+                        lines.append(f"🟢 **{name}**: 运行中 ({api_url})")
+                    else:
+                        lines.append(f"🔴 **{name}**: 异常 (HTTP {resp.status_code})")
+                except requests.exceptions.ConnectionError:
+                    lines.append(f"⚫ **{name}**: 未启动 ({api_url})")
+                except Exception as e:
+                    lines.append(f"⚠️ **{name}**: 错误 - {str(e)}")
             return "\n".join(lines)
-
 
 # 单例
 _conductor = None

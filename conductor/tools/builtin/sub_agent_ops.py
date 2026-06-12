@@ -54,7 +54,7 @@ CALL_SUB_AGENT_TOOL = {
             "agent_name": {
                 "type": "string",
                 "description": "子 Agent 名称",
-                "enum": ["creator"]
+                "enum": ["creator","scavenger"]
             },
             "instruction": {
                 "type": "string",
