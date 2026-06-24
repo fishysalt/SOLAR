@@ -1,0 +1,52 @@
+{
+  "call_id": "20260621_204107_0015",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:42:14.017628",
+  "server_name": "CodeTools",
+  "tool_name": "request_permissions",
+  "arguments": {
+    "tool_name": "exec_command",
+    "permission": "network",
+    "reason": "test permission request functionality",
+    "arguments": {
+      "cmd": "echo test"
+    }
+  },
+  "request_id": "CodeTools_17",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_17\", \"method\": \"tools/call\", \"params\": {\"name\": \"request_permissions\", \"arguments\": {\"tool_name\": \"exec_command\", \"permission\": \"network\", \"reason\": \"test permission request functionality\", \"arguments\": {\"cmd\": \"echo test\"}}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\": {\"category\": \"permission\", \"code\": \"ELICITATION_UNSUPPORTED\", \"details\": {\"requested\": {\"arguments\": {\"cmd\": \"echo test\"}, \"permission\": \"network\", \"reason\": \"test permission request functionality\", \"tool_name\": \"exec_command\"}}, \"message\": \"Permission elicitation is not available for this client.\", \"retryable\": false}, \"expires_at\": null, \"grant_id\": null, \"ok\": false, \"status\": \"unsupported\"}"
+      }
+    ],
+    "structuredContent": {
+      "ok": false,
+      "status": "unsupported",
+      "grant_id": null,
+      "expires_at": null,
+      "error": {
+        "code": "ELICITATION_UNSUPPORTED",
+        "message": "Permission elicitation is not available for this client.",
+        "category": "permission",
+        "retryable": false,
+        "details": {
+          "requested": {
+            "tool_name": "exec_command",
+            "permission": "network",
+            "reason": "test permission request functionality",
+            "arguments": {
+              "cmd": "echo test"
+            }
+          }
+        }
+      }
+    },
+    "isError": true
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_17\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"error\\\": {\\\"category\\\": \\\"permission\\\", \\\"code\\\": \\\"ELICITATION_UNSUPPORTED\\\", \\\"details\\\": {\\\"requested\\\": {\\\"arguments\\\": {\\\"cmd\\\": \\\"echo test\\\"}, \\\"permission\\\": \\\"network\\\", \\\"reason\\\": \\\"test permission request functionality\\\", \\\"tool_name\\\": \\\"exec_command\\\"}}, \\\"message\\\": \\\"Permission elicitation is not available for this client.\\\", \\\"retryable\\\": false}, \\\"expires_at\\\": null, \\\"grant_id\\\": null, \\\"ok\\\": false, \\\"status\\\": \\\"unsupported\\\"}\"}], \"structuredContent\": {\"ok\": false, \"status\": \"unsupported\", \"grant_id\": null, \"expires_at\": null, \"error\": {\"code\": \"ELICITATION_UNSUPPORTED\", \"message\": \"Permission elicitation is not available for this client.\", \"category\": \"permission\", \"retryable\": false, \"details\": {\"requested\": {\"tool_name\": \"exec_command\", \"permission\": \"network\", \"reason\": \"test permission request functionality\", \"arguments\": {\"cmd\": \"echo test\"}}}}}, \"isError\": true}}",
+  "error": null,
+  "duration": 0.00023794174194335938
+}

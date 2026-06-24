@@ -1,0 +1,54 @@
+{
+  "call_id": "20260621_204107_0017",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:42:20.781546",
+  "server_name": "CodeTools",
+  "tool_name": "exec_command",
+  "arguments": {
+    "cmd": "timeout /t 60 /nobreak",
+    "timeout_ms": 2000,
+    "yield_time_ms": 500
+  },
+  "request_id": "CodeTools_19",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_19\", \"method\": \"tools/call\", \"params\": {\"name\": \"exec_command\", \"arguments\": {\"cmd\": \"timeout /t 60 /nobreak\", \"timeout_ms\": 2000, \"yield_time_ms\": 500}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"elapsed_ms\": 56, \"exit_code\": 1, \"ok\": true, \"session_id\": \"HQMssEGUsASHvpbXAZJusOPy\", \"signal\": null, \"status\": \"exited\", \"stderr\": \"\\ufffd\\ufffd\\ufffd\\ufffd: \\ufffd\\ufffd\\u05a7\\ufffd\\ufffd\\ufffd\\ufffd\\ufffd\\ufffd\\ufffd\\ufffd\\ufffd\\u00b6\\ufffd\\ufffd\\ufffd\\ufffd\\ufffd\\ufffd\\ufffd\\ufffd\\u02f3\\ufffd\\ufffd\\u02fd\\ufffd\\ufffd\\u0321\\ufffd\\r\\n\", \"stderr_dropped_bytes\": 0, \"stderr_omitted_bytes\": 0, \"stderr_output_bytes\": 98, \"stderr_output_lines\": 2, \"stderr_truncated\": false, \"stderr_truncated_by\": null, \"stdout\": \"\", \"stdout_dropped_bytes\": 0, \"stdout_omitted_bytes\": 0, \"stdout_output_bytes\": 0, \"stdout_output_lines\": 1, \"stdout_truncated\": false, \"stdout_truncated_by\": null, \"timed_out\": false, \"truncated\": false, \"warnings\": [\"Linux Landlock filesystem confinement is unavailable on this host; exec_command ran with policy checks only. Use an external sandbox before running untrusted commands.\"]}"
+      }
+    ],
+    "structuredContent": {
+      "session_id": "HQMssEGUsASHvpbXAZJusOPy",
+      "status": "exited",
+      "exit_code": 1,
+      "signal": null,
+      "timed_out": false,
+      "stdout": "",
+      "stderr": "����: ��֧���������¶��������˳��˽��̡�\r\n",
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "stdout_truncated_by": null,
+      "stderr_truncated_by": null,
+      "stdout_output_lines": 1,
+      "stderr_output_lines": 2,
+      "stdout_output_bytes": 0,
+      "stderr_output_bytes": 98,
+      "stdout_dropped_bytes": 0,
+      "stderr_dropped_bytes": 0,
+      "stdout_omitted_bytes": 0,
+      "stderr_omitted_bytes": 0,
+      "truncated": false,
+      "ok": true,
+      "warnings": [
+        "Linux Landlock filesystem confinement is unavailable on this host; exec_command ran with policy checks only. Use an external sandbox before running untrusted commands."
+      ],
+      "elapsed_ms": 56
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_19\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"elapsed_ms\\\": 56, \\\"exit_code\\\": 1, \\\"ok\\\": true, \\\"session_id\\\": \\\"HQMssEGUsASHvpbXAZJusOPy\\\", \\\"signal\\\": null, \\\"status\\\": \\\"exited\\\", \\\"stderr\\\": \\\"\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd: \\\\ufffd\\\\ufffd\\\\u05a7\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\u00b6\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\ufffd\\\\u02f3\\\\ufffd\\\\ufffd\\\\u02fd\\\\ufffd\\\\ufffd\\\\u0321\\\\ufffd\\\\r\\\\n\\\", \\\"stderr_dropped_bytes\\\": 0, \\\"stderr_omitted_bytes\\\": 0, \\\"stderr_output_bytes\\\": 98, \\\"stderr_output_lines\\\": 2, \\\"stderr_truncated\\\": false, \\\"stderr_truncated_by\\\": null, \\\"stdout\\\": \\\"\\\", \\\"stdout_dropped_bytes\\\": 0, \\\"stdout_omitted_bytes\\\": 0, \\\"stdout_output_bytes\\\": 0, \\\"stdout_output_lines\\\": 1, \\\"stdout_truncated\\\": false, \\\"stdout_truncated_by\\\": null, \\\"timed_out\\\": false, \\\"truncated\\\": false, \\\"warnings\\\": [\\\"Linux Landlock filesystem confinement is unavailable on this host; exec_command ran with policy checks only. Use an external sandbox before running untrusted commands.\\\"]}\"}], \"structuredContent\": {\"session_id\": \"HQMssEGUsASHvpbXAZJusOPy\", \"status\": \"exited\", \"exit_code\": 1, \"signal\": null, \"timed_out\": false, \"stdout\": \"\", \"stderr\": \"����: ��֧���������¶��������˳��˽��̡�\\r\\n\", \"stdout_truncated\": false, \"stderr_truncated\": false, \"stdout_truncated_by\": null, \"stderr_truncated_by\": null, \"stdout_output_lines\": 1, \"stderr_output_lines\": 2, \"stdout_output_bytes\": 0, \"stderr_output_bytes\": 98, \"stdout_dropped_bytes\": 0, \"stderr_dropped_bytes\": 0, \"stdout_omitted_bytes\": 0, \"stderr_omitted_bytes\": 0, \"truncated\": false, \"ok\": true, \"warnings\": [\"Linux Landlock filesystem confinement is unavailable on this host; exec_command ran with policy checks only. Use an external sandbox before running untrusted commands.\"], \"elapsed_ms\": 56}, \"isError\": false}}",
+  "error": null,
+  "duration": 0.05893087387084961
+}

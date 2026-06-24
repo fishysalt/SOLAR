@@ -1,0 +1,18 @@
+{
+  "call_id": "20260621_203236_0006",
+  "session_id": "20260621_203236",
+  "timestamp": "2026-06-21T20:33:11.907088",
+  "server_name": "CodeTools",
+  "tool_name": "list_files",
+  "arguments": {
+    "path": ".",
+    "glob": "*.txt"
+  },
+  "request_id": "CodeTools_8",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_8\", \"method\": \"tools/call\", \"params\": {\"name\": \"list_files\", \"arguments\": {\"path\": \".\", \"glob\": \"*.txt\"}}}",
+  "status": "timeout",
+  "response": null,
+  "raw_response": null,
+  "error": "超时 (120.01078963279724秒)",
+  "duration": 120.01078963279724
+}

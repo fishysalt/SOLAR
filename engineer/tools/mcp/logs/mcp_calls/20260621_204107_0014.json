@@ -1,0 +1,38 @@
+{
+  "call_id": "20260621_204107_0014",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:42:07.561223",
+  "server_name": "CodeTools",
+  "tool_name": "search_text",
+  "arguments": {
+    "query": "\\.png|\\.jpg|\\.gif|\\.svg",
+    "path": ".",
+    "include_globs": [
+      "*"
+    ]
+  },
+  "request_id": "CodeTools_16",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_16\", \"method\": \"tools/call\", \"params\": {\"name\": \"search_text\", \"arguments\": {\"query\": \"\\\\.png|\\\\.jpg|\\\\.gif|\\\\.svg\", \"path\": \".\", \"include_globs\": [\"*\"]}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"engine\": \"rg\", \"matches\": [], \"ok\": true, \"query\": \"\\\\.png|\\\\.jpg|\\\\.gif|\\\\.svg\", \"total_matches\": 0, \"truncated\": false, \"warnings\": []}"
+      }
+    ],
+    "structuredContent": {
+      "query": "\\.png|\\.jpg|\\.gif|\\.svg",
+      "matches": [],
+      "total_matches": 0,
+      "truncated": false,
+      "engine": "rg",
+      "warnings": [],
+      "ok": true
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_16\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"engine\\\": \\\"rg\\\", \\\"matches\\\": [], \\\"ok\\\": true, \\\"query\\\": \\\"\\\\\\\\.png|\\\\\\\\.jpg|\\\\\\\\.gif|\\\\\\\\.svg\\\", \\\"total_matches\\\": 0, \\\"truncated\\\": false, \\\"warnings\\\": []}\"}], \"structuredContent\": {\"query\": \"\\\\.png|\\\\.jpg|\\\\.gif|\\\\.svg\", \"matches\": [], \"total_matches\": 0, \"truncated\": false, \"engine\": \"rg\", \"warnings\": [], \"ok\": true}, \"isError\": false}}",
+  "error": null,
+  "duration": 2.9575343132019043
+}

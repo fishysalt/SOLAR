@@ -55,22 +55,22 @@ def main():
                 msg = gr.Textbox(label="输入任务", placeholder="例如：自我介绍、记住我喜欢简约风格、查看我的记忆...", lines=2)
                 clear_chat_btn = gr.Button("清空对话")
                 
-                def respond(message, history):
+                async def respond(message, history):
                     if not message:
                         return "", history
-                    
-                    result = creator.handle_task(message, [])
+    
+                    result = await creator.handle_task(message, [])
                     response = result.get("message", "处理完成")
-                    
+    
                     history = history or []
                     history.append({
-                        "role": "user",
-                        "content": [{"type": "text", "text": message}]
-                    })
+                            "role": "user",
+                            "content": [{"type": "text", "text": message}]
+                            })
                     history.append({
-                        "role": "assistant",
-                        "content": [{"type": "text", "text": response}]
-                    })
+                            "role": "assistant",
+                            "content": [{"type": "text", "text": response}]
+                            })
                     return "", history
                 
                 msg.submit(respond, [msg, chatbot], [msg, chatbot])

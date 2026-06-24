@@ -1,0 +1,80 @@
+{
+  "call_id": "20260621_203236_0001",
+  "session_id": "20260621_203236",
+  "timestamp": "2026-06-21T20:33:08.806914",
+  "server_name": "CodeTools",
+  "tool_name": "server_info",
+  "arguments": {},
+  "request_id": "CodeTools_3",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_3\", \"method\": \"tools/call\", \"params\": {\"name\": \"server_info\", \"arguments\": {}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"auth_enabled\": false, \"cache_dir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\cache\", \"dangerously_skip_all_permissions\": false, \"default_cwd\": \".\", \"endpoint_path\": \"/mcp\", \"exec_policy\": {\"global_tmp_write\": \"blocked\", \"inline_script\": \"blocked\", \"secret_env_filter\": \"enabled\", \"shell_expansion\": \"blocked\"}, \"home\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\home\", \"landlock\": {\"abi_version\": null, \"available\": false, \"details\": {}, \"enabled\": false, \"reason\": \"Linux Landlock filesystem confinement is unavailable on this platform.\"}, \"network_allowed\": false, \"ok\": true, \"permission_mode\": \"safe\", \"protocol_version\": \"2025-06-18\", \"runtime_dir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\", \"server\": \"coding-tools-mcp\", \"shell_env_exclude\": [], \"shell_env_include_only\": [], \"shell_env_inherit\": \"core\", \"title\": \"Coding Tools MCP\", \"tmpdir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\tmp\", \"tool_count\": 19, \"tool_profile\": \"full\", \"tools\": [\"server_info\", \"check_exec_environment\", \"get_default_cwd\", \"set_default_cwd\", \"read_file\", \"list_dir\", \"list_files\", \"search_text\", \"apply_patch\", \"exec_command\", \"write_stdin\", \"kill_session\", \"git_status\", \"git_diff\", \"git_log\", \"git_show\", \"git_blame\", \"request_permissions\", \"view_image\"], \"version\": \"0.1.7\", \"workspace\": \"E:\\\\Agents\\\\SOLAR_MA\"}"
+      }
+    ],
+    "structuredContent": {
+      "server": "coding-tools-mcp",
+      "title": "Coding Tools MCP",
+      "version": "0.1.7",
+      "protocol_version": "2025-06-18",
+      "workspace": "E:\\Agents\\SOLAR_MA",
+      "permission_mode": "safe",
+      "network_allowed": false,
+      "runtime_dir": "C:\\Users\\92634\\AppData\\Local\\Temp\\coding-tools-mcp\\8089ff7dac288b0a\\gA9QVFD9GaVmVo6m",
+      "home": "C:\\Users\\92634\\AppData\\Local\\Temp\\coding-tools-mcp\\8089ff7dac288b0a\\gA9QVFD9GaVmVo6m\\home",
+      "tmpdir": "C:\\Users\\92634\\AppData\\Local\\Temp\\coding-tools-mcp\\8089ff7dac288b0a\\gA9QVFD9GaVmVo6m\\tmp",
+      "cache_dir": "C:\\Users\\92634\\AppData\\Local\\Temp\\coding-tools-mcp\\8089ff7dac288b0a\\gA9QVFD9GaVmVo6m\\cache",
+      "default_cwd": ".",
+      "tool_profile": "full",
+      "auth_enabled": false,
+      "dangerously_skip_all_permissions": false,
+      "landlock": {
+        "available": false,
+        "abi_version": null,
+        "reason": "Linux Landlock filesystem confinement is unavailable on this platform.",
+        "details": {},
+        "enabled": false
+      },
+      "exec_policy": {
+        "shell_expansion": "blocked",
+        "inline_script": "blocked",
+        "global_tmp_write": "blocked",
+        "secret_env_filter": "enabled"
+      },
+      "shell_env_inherit": "core",
+      "shell_env_include_only": [],
+      "shell_env_exclude": [],
+      "endpoint_path": "/mcp",
+      "tools": [
+        "server_info",
+        "check_exec_environment",
+        "get_default_cwd",
+        "set_default_cwd",
+        "read_file",
+        "list_dir",
+        "list_files",
+        "search_text",
+        "apply_patch",
+        "exec_command",
+        "write_stdin",
+        "kill_session",
+        "git_status",
+        "git_diff",
+        "git_log",
+        "git_show",
+        "git_blame",
+        "request_permissions",
+        "view_image"
+      ],
+      "tool_count": 19,
+      "ok": true
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_3\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"auth_enabled\\\": false, \\\"cache_dir\\\": \\\"C:\\\\\\\\Users\\\\\\\\92634\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\coding-tools-mcp\\\\\\\\8089ff7dac288b0a\\\\\\\\gA9QVFD9GaVmVo6m\\\\\\\\cache\\\", \\\"dangerously_skip_all_permissions\\\": false, \\\"default_cwd\\\": \\\".\\\", \\\"endpoint_path\\\": \\\"/mcp\\\", \\\"exec_policy\\\": {\\\"global_tmp_write\\\": \\\"blocked\\\", \\\"inline_script\\\": \\\"blocked\\\", \\\"secret_env_filter\\\": \\\"enabled\\\", \\\"shell_expansion\\\": \\\"blocked\\\"}, \\\"home\\\": \\\"C:\\\\\\\\Users\\\\\\\\92634\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\coding-tools-mcp\\\\\\\\8089ff7dac288b0a\\\\\\\\gA9QVFD9GaVmVo6m\\\\\\\\home\\\", \\\"landlock\\\": {\\\"abi_version\\\": null, \\\"available\\\": false, \\\"details\\\": {}, \\\"enabled\\\": false, \\\"reason\\\": \\\"Linux Landlock filesystem confinement is unavailable on this platform.\\\"}, \\\"network_allowed\\\": false, \\\"ok\\\": true, \\\"permission_mode\\\": \\\"safe\\\", \\\"protocol_version\\\": \\\"2025-06-18\\\", \\\"runtime_dir\\\": \\\"C:\\\\\\\\Users\\\\\\\\92634\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\coding-tools-mcp\\\\\\\\8089ff7dac288b0a\\\\\\\\gA9QVFD9GaVmVo6m\\\", \\\"server\\\": \\\"coding-tools-mcp\\\", \\\"shell_env_exclude\\\": [], \\\"shell_env_include_only\\\": [], \\\"shell_env_inherit\\\": \\\"core\\\", \\\"title\\\": \\\"Coding Tools MCP\\\", \\\"tmpdir\\\": \\\"C:\\\\\\\\Users\\\\\\\\92634\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\coding-tools-mcp\\\\\\\\8089ff7dac288b0a\\\\\\\\gA9QVFD9GaVmVo6m\\\\\\\\tmp\\\", \\\"tool_count\\\": 19, \\\"tool_profile\\\": \\\"full\\\", \\\"tools\\\": [\\\"server_info\\\", \\\"check_exec_environment\\\", \\\"get_default_cwd\\\", \\\"set_default_cwd\\\", \\\"read_file\\\", \\\"list_dir\\\", \\\"list_files\\\", \\\"search_text\\\", \\\"apply_patch\\\", \\\"exec_command\\\", \\\"write_stdin\\\", \\\"kill_session\\\", \\\"git_status\\\", \\\"git_diff\\\", \\\"git_log\\\", \\\"git_show\\\", \\\"git_blame\\\", \\\"request_permissions\\\", \\\"view_image\\\"], \\\"version\\\": \\\"0.1.7\\\", \\\"workspace\\\": \\\"E:\\\\\\\\Agents\\\\\\\\SOLAR_MA\\\"}\"}], \"structuredContent\": {\"server\": \"coding-tools-mcp\", \"title\": \"Coding Tools MCP\", \"version\": \"0.1.7\", \"protocol_version\": \"2025-06-18\", \"workspace\": \"E:\\\\Agents\\\\SOLAR_MA\", \"permission_mode\": \"safe\", \"network_allowed\": false, \"runtime_dir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\", \"home\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\home\", \"tmpdir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\tmp\", \"cache_dir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\cache\", \"default_cwd\": \".\", \"tool_profile\": \"full\", \"auth_enabled\": false, \"dangerously_skip_all_permissions\": false, \"landlock\": {\"available\": false, \"abi_version\": null, \"reason\": \"Linux Landlock filesystem confinement is unavailable on this platform.\", \"details\": {}, \"enabled\": false}, \"exec_policy\": {\"shell_expansion\": \"blocked\", \"inline_script\": \"blocked\", \"global_tmp_write\": \"blocked\", \"secret_env_filter\": \"enabled\"}, \"shell_env_inherit\": \"core\", \"shell_env_include_only\": [], \"shell_env_exclude\": [], \"endpoint_path\": \"/mcp\", \"tools\": [\"server_info\", \"check_exec_environment\", \"get_default_cwd\", \"set_default_cwd\", \"read_file\", \"list_dir\", \"list_files\", \"search_text\", \"apply_patch\", \"exec_command\", \"write_stdin\", \"kill_session\", \"git_status\", \"git_diff\", \"git_log\", \"git_show\", \"git_blame\", \"request_permissions\", \"view_image\"], \"tool_count\": 19, \"ok\": true}, \"isError\": false}}",
+  "error": null,
+  "duration": 0.0004076957702636719
+}

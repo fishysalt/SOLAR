@@ -1,0 +1,25 @@
+{
+  "call_id": "20260621_204107_0027",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:46:04.917342",
+  "server_name": "SmartSearch",
+  "tool_name": "ai_search_github",
+  "arguments": {
+    "query": "mcp-server python",
+    "type": "repositories"
+  },
+  "request_id": "SmartSearch_4",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"SmartSearch_4\", \"method\": \"tools/call\", \"params\": {\"name\": \"ai_search_github\", \"arguments\": {\"query\": \"mcp-server python\", \"type\": \"repositories\"}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "🐙 **GitHub搜索**\n\n**关键词**: mcp-server python\n**搜索链接**: https://github.com/search?q=mcp-server%20python&type=repositories&s=stars&o=desc\n\n✅ 详细信息已保存至: E:\\Agents\\SOLAR_MA\\engineer\\.search-results\\github-search-2026-06-21T12-46-04.md\n💡 使用 WebFetch 工具访问搜索链接获取结果"
+      }
+    ]
+  },
+  "raw_response": "{\"result\": {\"content\": [{\"type\": \"text\", \"text\": \"🐙 **GitHub搜索**\\n\\n**关键词**: mcp-server python\\n**搜索链接**: https://github.com/search?q=mcp-server%20python&type=repositories&s=stars&o=desc\\n\\n✅ 详细信息已保存至: E:\\\\Agents\\\\SOLAR_MA\\\\engineer\\\\.search-results\\\\github-search-2026-06-21T12-46-04.md\\n💡 使用 WebFetch 工具访问搜索链接获取结果\"}]}, \"jsonrpc\": \"2.0\", \"id\": \"SmartSearch_4\"}",
+  "error": null,
+  "duration": 0.0014297962188720703
+}

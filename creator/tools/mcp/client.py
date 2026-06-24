@@ -77,6 +77,10 @@ class MCPClient:
             # 合并环境变量（当前进程的环境变量 + self.env）
             env = {**os.environ, **self.env}
             
+            # 强制设置 UTF-8 编码，避免中文和特殊字符导致的解码错误
+            env["PYTHONIOENCODING"] = "utf-8"
+            env["PYTHONUTF8"] = "1"
+            
             # 打印传递给子进程的关键变量
             minimax_key = env.get("MINIMAX_API_KEY")
             if minimax_key:
@@ -84,7 +88,7 @@ class MCPClient:
             else:
                 print(f"   ⚠️ [MCPClient] 传递给子进程的 MINIMAX_API_KEY 为空")
             
-            # 启动子进程
+            # 启动子进程，强制使用 UTF-8 编码
             self._process = subprocess.Popen(
                 [self.command] + self.args,
                 stdin=subprocess.PIPE,
@@ -92,7 +96,9 @@ class MCPClient:
                 stderr=subprocess.PIPE,
                 env=env,
                 text=True,
-                bufsize=1
+                bufsize=1,
+                encoding='utf-8',      # 强制使用 UTF-8 解码输出
+                errors='replace'       # 无法解码的字符替换为 �，不抛出异常
             )
             
             self._running = True
@@ -199,7 +205,7 @@ class MCPClient:
             return
         
         try:
-            line = json.dumps(message) + "\n"
+            line = json.dumps(message, ensure_ascii=False) + "\n"
             self._process.stdin.write(line)
             self._process.stdin.flush()
         except Exception as e:

@@ -1,0 +1,35 @@
+{
+  "call_id": "20260621_204107_0020",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:42:28.757290",
+  "server_name": "CodeTools",
+  "tool_name": "kill_session",
+  "arguments": {
+    "session_id": "3qsM_Z0m_rRI-h4OinWeaA-I"
+  },
+  "request_id": "CodeTools_22",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_22\", \"method\": \"tools/call\", \"params\": {\"name\": \"kill_session\", \"arguments\": {\"session_id\": \"3qsM_Z0m_rRI-h4OinWeaA-I\"}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\": {\"category\": \"not_found\", \"code\": \"SESSION_NOT_FOUND\", \"details\": {}, \"message\": \"Session not found; stdin access denied.\", \"retryable\": false}, \"ok\": false}"
+      }
+    ],
+    "structuredContent": {
+      "ok": false,
+      "error": {
+        "code": "SESSION_NOT_FOUND",
+        "message": "Session not found; stdin access denied.",
+        "category": "not_found",
+        "retryable": false,
+        "details": {}
+      }
+    },
+    "isError": true
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_22\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"error\\\": {\\\"category\\\": \\\"not_found\\\", \\\"code\\\": \\\"SESSION_NOT_FOUND\\\", \\\"details\\\": {}, \\\"message\\\": \\\"Session not found; stdin access denied.\\\", \\\"retryable\\\": false}, \\\"ok\\\": false}\"}], \"structuredContent\": {\"ok\": false, \"error\": {\"code\": \"SESSION_NOT_FOUND\", \"message\": \"Session not found; stdin access denied.\", \"category\": \"not_found\", \"retryable\": false, \"details\": {}}}, \"isError\": true}}",
+  "error": null,
+  "duration": 0.0001685619354248047
+}

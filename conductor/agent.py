@@ -2,6 +2,7 @@
 
 import json
 import yaml
+import re
 from pathlib import Path
 from typing import Optional, Dict, Any, List
 from datetime import datetime
@@ -74,7 +75,20 @@ class ConductorAgent:
         log_with_timestamp(self.name, "INFO", f"记忆目录: {memory_dir}")
         log_with_timestamp(self.name, "INFO", f"LLM: {self.llm_config.provider}/{self.model}")
         log_with_timestamp(self.name, "INFO", f"已注册 {len(self.tools.list_tools())} 个工具")
-    
+
+    def _clean_response(self, text: str) -> str:    
+        """清理响应中的工具调用标签"""
+        # 移除 <｜｜DSML｜｜tool_calls>...</｜｜DSML｜｜tool_calls> 块
+        pattern = r'<｜｜DSML｜｜tool_calls>.*?<｜｜DSML｜｜/tool_calls>'
+        text = re.sub(pattern, '', text, flags=re.DOTALL)
+        # 移除单独的 <｜｜DSML｜｜invoke...> 标签
+        text = re.sub(r'<｜｜DSML｜｜invoke[^>]*>', '', text)
+        text = re.sub(r'</｜｜DSML｜｜invoke>', '', text)
+        text = re.sub(r'<｜｜DSML｜｜parameter[^>]*>', '', text)
+        text = re.sub(r'</｜｜DSML｜｜parameter>', '', text)
+            # 清理多余空行
+        text = re.sub(r'\n\s*\n', '\n\n', text)
+        return text.strip()
     def _load_config(self, config_path: Path) -> dict:
         if not config_path.exists():
             return self._get_default_config()
@@ -158,17 +172,40 @@ class ConductorAgent:
         """
         调度任务到子 Agent（通过注册表实时调用）
         """
+        from .http_client import get_http_client
+        
         log_with_timestamp(self.name, "INFO", f"📤 调度到 {agent_name}: {instruction[:100]}...")
         
-        # 通过注册表发送任务（实时 HTTP）
+        # 通过注册表发送任务
         result = await self.registry.send_task(agent_name, instruction)
         
         if result.get("status") == "success":
             log_with_timestamp(self.name, "INFO", f"✅ 调度成功")
-        else:
-            log_with_timestamp(self.name, "WARNING", f"❌ 调度失败: {result.get('error')}")
+            return result
         
-        return result
+        elif result.get("status") == "error":
+            error_id = result.get("error_id")
+            error_path = result.get("error_path")
+            
+            if error_id:
+                log_with_timestamp(self.name, "INFO", f"📝 检测到错误 {error_id}，转发给 Engineer...")
+                
+                client = get_http_client()
+                diagnosis_instruction = f"请诊断并修复错误 {error_id}，错误日志位于 {error_path}"
+                engineer_result = await client.send_task("engineer", diagnosis_instruction)
+                
+                if engineer_result.get("status") == "success":
+                    return {
+                        "status": "success",
+                        "message": f"✅ 错误 {error_id} 已由 Engineer 处理\n\n{engineer_result.get('message', '')}"
+                    }
+                else:
+                    # Engineer 处理失败，返回原始错误
+                    return result
+            
+            return result
+        
+
     
     async def chat(self, user_input: str) -> str:
         """对话入口"""
@@ -233,7 +270,7 @@ class ConductorAgent:
                     reply = f"✅ 已调度 {agent_name}\n\n{result.get('message', '')}"
                 else:
                     reply = f"❌ 调度失败: {result.get('error', '未知错误')}"
-            
+            reply = self._clean_response(reply)
             self.memory.add_short_term("assistant", reply)
             return reply
             

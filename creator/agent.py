@@ -90,6 +90,24 @@ class CreatorAgent:
         log_with_timestamp(self.name, "INFO", f"已注册 {len(self.tools.list_tools())} 个工具（含 MCP 外部工具）")
         log_with_timestamp(self.name, "INFO", f"能力: {', '.join(self.capabilities)}")
     
+    def _clean_response(self, text: str) -> str:
+        """清理响应中的工具调用标签"""
+        if not text:
+            return text
+    
+        import re
+        # 移除 <｜｜DSML｜｜tool_calls>...</｜｜DSML｜｜tool_calls> 块
+        pattern = r'<｜｜DSML｜｜tool_calls>.*?<｜｜DSML｜｜/tool_calls>'
+        text = re.sub(pattern, '', text, flags=re.DOTALL)
+        # 移除单独的标签
+        text = re.sub(r'<｜｜DSML｜｜invoke[^>]*>', '', text)
+        text = re.sub(r'</｜｜DSML｜｜invoke>', '', text)
+        text = re.sub(r'<｜｜DSML｜｜parameter[^>]*>', '', text)
+        text = re.sub(r'</｜｜DSML｜｜parameter>', '', text)
+        # 清理多余空行
+        text = re.sub(r'\n\s*\n', '\n\n', text)
+        return text.strip()
+
     def _retrieve_relevant_memories(self, query: str, limit: int = 5) -> List[Dict]:
         """检索相关的长期记忆"""
         return self.memory.search_long_term(keyword=query, limit=limit)
@@ -290,35 +308,36 @@ class CreatorAgent:
         files = list(self.output_dir.glob("*"))
         return [f.name for f in files if f.is_file()]
     
-    def handle_task(self, instruction: str, input_files: list = None) -> Dict[str, Any]:
+    async def handle_task(self, instruction: str, input_files: list = None) -> Dict[str, Any]:
         """
-        处理自然语言任务 - 使用 LLM + 记忆检索 + RAG + Tools
+        处理自然语言任务 - ReAct 循环版本
         
-        这是 Conductor 调用 Creator 的入口点。
+        新增机制：
+        - 重复工具调用检测：如果连续两次调用相同工具（相同 task_id），自动等待 10 秒
+        - 错误日志记录：任务失败时自动记录错误日志到 shared/errors/
         """
         log_with_timestamp(self.name, "INFO", f"📥 收到任务: {instruction[:100]}...")
+        
+        # 1. 记录开始前的文件
         before_files = set(self._list_output_files())
-        # 1. 处理输入文件
+        
+        # 2. 处理输入文件
         local_files = self._process_input_files(input_files or [])
         
-        # 2. 添加到短期记忆
+        # 3. 添加到短期记忆
         self.memory.add_short_term("user", instruction)
         
-        # 如果有输入文件，也记录到记忆
         if local_files:
             file_info = f"用户提供了输入文件: {[f.name for f in local_files]}"
             self.memory.add_short_term("system", file_info)
         
-        # 3. 构建消息
+        # 4. 构建初始消息
         messages = [
             {"role": "system", "content": self._build_system_prompt(instruction)}
         ]
-        
-        # 添加对话上下文
         context = self._get_conversation_context()
         messages.extend(context)
         
-        # 添加输入文件信息（如果有）
         if local_files:
             file_list = "\n".join([f"- {f.name}" for f in local_files])
             messages.append({
@@ -326,25 +345,41 @@ class CreatorAgent:
                 "content": f"用户上传了以下文件，你可以根据需要读取：\n{file_list}"
             })
         
-        # 添加当前指令
         messages.append({"role": "user", "content": instruction})
         
-        # 4. 调用 LLM
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                tools=self.tools.get_schemas() if self.tools and self.tools.list_tools() else None,
-                tool_choice="auto",
-                temperature=self.temperature,
-                max_tokens=self.llm_config.max_tokens
-            )
+        # 5. ReAct 循环
+        max_iterations = 20
+        final_reply = ""
+        error_occurred = False
+        error_details = {}
+        
+        # 重复检测状态
+        last_tool_call = None
+        
+        for iteration in range(max_iterations):
+            log_with_timestamp(self.name, "INFO", f"🔄 ReAct 循环第 {iteration + 1} 轮")
             
-            message = response.choices[0].message
-            
-            # 处理工具调用
-            if message.tool_calls:
-                log_with_timestamp(self.name, "INFO", f"🔧 LLM 请求调用 {len(message.tool_calls)} 个工具")
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=messages,
+                    tools=self.tools.get_schemas() if self.tools and self.tools.list_tools() else None,
+                    tool_choice="auto",
+                    temperature=self.temperature,
+                    max_tokens=self.llm_config.max_tokens
+                )
+                
+                message = response.choices[0].message
+                
+                # 检测到最终回答：重置状态
+                if not message.tool_calls:
+                    final_reply = self._clean_response(message.content or "")
+                    log_with_timestamp(self.name, "INFO", f"✅ 任务完成，共 {iteration + 1} 轮")
+                    last_tool_call = None
+                    break
+                
+                # 处理工具调用
+                log_with_timestamp(self.name, "INFO", f"🔧 调用 {len(message.tool_calls)} 个工具")
                 
                 # 添加 assistant 消息
                 assistant_msg = {
@@ -369,8 +404,31 @@ class CreatorAgent:
                     tool_name = tool_call.function.name
                     tool_args = json.loads(tool_call.function.arguments)
                     
+                    # 重复检测与延迟
+                    task_id = tool_args.get("task_id") or tool_args.get("taskId") or ""
+                    current_signature = f"{tool_name}:{task_id}"
+                    
+                    if last_tool_call and last_tool_call == current_signature:
+                        log_with_timestamp(self.name, "INFO", f"⏳ 检测到重复工具调用 ({tool_name}, task_id: {task_id})，等待 10 秒...")
+                        import asyncio
+                        await asyncio.sleep(10)
+                        log_with_timestamp(self.name, "INFO", f"⏳ 等待完成，继续执行")
+                    
                     log_with_timestamp(self.name, "INFO", f"🔧 执行工具: {tool_name}")
                     result = self.tools.execute(tool_name, **tool_args)
+                    
+                    # 检测工具执行是否出错
+                    if result.startswith("❌") or ("error" in result.lower() and "✅" not in result):
+                        error_occurred = True
+                        error_details = {
+                            "tool": tool_name,
+                            "args": tool_args,
+                            "result": result[:500],  # 截断防止过大
+                            "iteration": iteration + 1
+                        }
+                        log_with_timestamp(self.name, "WARNING", f"⚠️ 工具执行出错: {result[:100]}")
+                    
+                    last_tool_call = current_signature
                     
                     messages.append({
                         "tool_call_id": tool_call.id,
@@ -378,40 +436,105 @@ class CreatorAgent:
                         "content": result
                     })
                 
-                # 再次调用 LLM 生成最终回复
-                final_response = self.client.chat.completions.create(
-                    model=self.model,
-                    messages=messages,
-                    temperature=self.temperature,
-                    max_tokens=self.llm_config.max_tokens
+                # 继续下一轮循环
+                continue
+                
+            except Exception as e:
+                log_with_timestamp(self.name, "ERROR", str(e), error=True)
+                error_occurred = True
+                error_details = {
+                    "type": "exception",
+                    "message": str(e),
+                    "iteration": iteration + 1
+                }
+                final_reply = f"❌ 处理出错: {str(e)}"
+                break
+        
+        # 6. 如果循环结束没有最终回复（达到最大迭代次数）
+        if not final_reply:
+            final_reply = "⚠️ 任务未完成，达到最大迭代次数"
+            error_occurred = True
+            error_details = {
+                "type": "max_iterations_reached",
+                "message": final_reply,
+                "iteration": max_iterations
+            }
+        
+        # 7. 清理响应
+        final_reply = self._clean_response(final_reply)
+        
+        # 8. 检查新文件
+        after_files = set(self._list_output_files())
+        new_files = list(after_files - before_files)
+        
+        # ============================================================
+        # 9. 错误日志记录（核心新增）
+        # ============================================================
+        if error_occurred:
+            try:
+                from shared.error_logger import get_error_logger
+                
+                error_logger = get_error_logger()
+                
+                # 构建错误信息
+                error_info = {
+                    "type": error_details.get("type", "task_failed"),
+                    "message": final_reply,
+                    "details": error_details,
+                    "context": {
+                        "iteration": error_details.get("iteration", 0),
+                        "max_iterations": max_iterations,
+                        "tools_used": [msg.get("tool_calls") for msg in messages if "tool_calls" in msg]
+                    }
+                }
+                
+                # 记录错误日志
+                error_id = error_logger.log_error(
+                    agent=self.name,
+                    original_task=instruction,
+                    error_info=error_info
                 )
-                reply = final_response.choices[0].message.content or ""
-            else:
-                reply = message.content or ""
-            
-            # 5. 检查是否有输出文件
-            after_files = set(self._list_output_files())
-            new_files = list(after_files - before_files)
-    
+                
+                log_with_timestamp(self.name, "INFO", f"📝 错误已记录: {error_id}")
+                
+                # 在回复中附上错误 ID
+                final_reply = f"{final_reply}\n\n📝 错误已记录: {error_id}"
+                error_path = error_logger.get_error_path(error_id)
+                
+                result = {
+                    "status": "error",
+                    "message": final_reply,
+                    "capability_used": None,
+                    "output_files": new_files,
+                    "error_id": error_id,
+                    "error_path": error_path
+                }
+                
+            except Exception as log_error:
+                log_with_timestamp(self.name, "ERROR", f"记录错误日志失败: {log_error}", error=True)
+                result = {
+                    "status": "error",
+                    "message": final_reply,
+                    "capability_used": None,
+                    "output_files": new_files
+                }
+        else:
+            # 没有错误
             result = {
                 "status": "success",
-                "message": reply,
+                "message": final_reply,
                 "capability_used": None,
                 "output_files": new_files
             }
-            log_with_timestamp(self.name, "INFO", f"📤 任务完成，新生成文件: {new_files}")
-            
-        except Exception as e:
-            log_with_timestamp(self.name, "ERROR", str(e), error=True)
-            
-            # 降级：使用简单模式
-            result = self._simple_handle(instruction)
+        # ============================================================
         
-        # 6. 添加到短期记忆
+        # 10. 添加到短期记忆
         self.memory.add_short_term("assistant", result["message"])
+        log_with_timestamp(self.name, "INFO", f"📤 任务完成，新生成文件: {new_files}")
         
         return result
     
+
     def _simple_handle(self, instruction: str) -> Dict[str, Any]:
         """简单模式（无 LLM 时的降级）"""
         before_files = set(self._list_output_files())

@@ -1,0 +1,35 @@
+{
+  "call_id": "20260621_204107_0010",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:41:57.957476",
+  "server_name": "CodeTools",
+  "tool_name": "git_blame",
+  "arguments": {
+    "path": "test.txt"
+  },
+  "request_id": "CodeTools_12",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_12\", \"method\": \"tools/call\", \"params\": {\"name\": \"git_blame\", \"arguments\": {\"path\": \"test.txt\"}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\": {\"category\": \"runtime\", \"code\": \"GIT_ERROR\", \"details\": {}, \"message\": \"fatal: no such path 'test.txt' in HEAD\", \"retryable\": false}, \"ok\": false}"
+      }
+    ],
+    "structuredContent": {
+      "ok": false,
+      "error": {
+        "code": "GIT_ERROR",
+        "message": "fatal: no such path 'test.txt' in HEAD",
+        "category": "runtime",
+        "retryable": false,
+        "details": {}
+      }
+    },
+    "isError": true
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_12\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"error\\\": {\\\"category\\\": \\\"runtime\\\", \\\"code\\\": \\\"GIT_ERROR\\\", \\\"details\\\": {}, \\\"message\\\": \\\"fatal: no such path 'test.txt' in HEAD\\\", \\\"retryable\\\": false}, \\\"ok\\\": false}\"}], \"structuredContent\": {\"ok\": false, \"error\": {\"code\": \"GIT_ERROR\", \"message\": \"fatal: no such path 'test.txt' in HEAD\", \"category\": \"runtime\", \"retryable\": false, \"details\": {}}}, \"isError\": true}}",
+  "error": null,
+  "duration": 0.09792041778564453
+}

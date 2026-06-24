@@ -10,6 +10,7 @@
 conductor/config.yaml
 creator/tools/mcp/config.json
 scavenger/tools/mcp/config.json
+engineer/tools/mcp/config.json
 # ========== 运行时数据（不提交）==========
 shared/temp/
 */data/input/

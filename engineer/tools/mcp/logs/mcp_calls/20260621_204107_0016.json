@@ -1,0 +1,56 @@
+{
+  "call_id": "20260621_204107_0016",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:42:17.378000",
+  "server_name": "CodeTools",
+  "tool_name": "exec_command",
+  "arguments": {
+    "cmd": "python -c \"import time; time.sleep(300)\"",
+    "timeout_ms": 1000,
+    "yield_time_ms": 500
+  },
+  "request_id": "CodeTools_18",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_18\", \"method\": \"tools/call\", \"params\": {\"name\": \"exec_command\", \"arguments\": {\"cmd\": \"python -c \\\"import time; time.sleep(300)\\\"\", \"timeout_ms\": 1000, \"yield_time_ms\": 500}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"diagnostics\": [{\"code\": \"INLINE_SCRIPT_PERMISSION_REQUIRED\", \"evidence\": \"Inline interpreter or shell code requires explicit permission because network and filesystem effects cannot be verified statically.\", \"severity\": \"error\", \"suggested_fix\": \"Restart the server with --permission-mode trusted for local development inline scripts.\", \"suggested_server_flag\": \"--permission-mode trusted\"}], \"error\": {\"category\": \"permission\", \"code\": \"PERMISSION_REQUIRED\", \"details\": {\"command\": \"python\", \"option\": \"-c\", \"permission\": \"inline_script\"}, \"message\": \"Inline interpreter or shell code requires explicit permission because network and filesystem effects cannot be verified statically.\", \"retryable\": false}, \"ok\": false, \"permission_request\": {\"permission\": \"inline_script\", \"retryable\": true, \"status\": \"required\", \"tool_name\": \"exec_command\"}}"
+      }
+    ],
+    "structuredContent": {
+      "ok": false,
+      "error": {
+        "code": "PERMISSION_REQUIRED",
+        "message": "Inline interpreter or shell code requires explicit permission because network and filesystem effects cannot be verified statically.",
+        "category": "permission",
+        "retryable": false,
+        "details": {
+          "permission": "inline_script",
+          "command": "python",
+          "option": "-c"
+        }
+      },
+      "diagnostics": [
+        {
+          "code": "INLINE_SCRIPT_PERMISSION_REQUIRED",
+          "severity": "error",
+          "evidence": "Inline interpreter or shell code requires explicit permission because network and filesystem effects cannot be verified statically.",
+          "suggested_fix": "Restart the server with --permission-mode trusted for local development inline scripts.",
+          "suggested_server_flag": "--permission-mode trusted"
+        }
+      ],
+      "permission_request": {
+        "tool_name": "exec_command",
+        "permission": "inline_script",
+        "status": "required",
+        "retryable": true
+      }
+    },
+    "isError": true
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_18\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"diagnostics\\\": [{\\\"code\\\": \\\"INLINE_SCRIPT_PERMISSION_REQUIRED\\\", \\\"evidence\\\": \\\"Inline interpreter or shell code requires explicit permission because network and filesystem effects cannot be verified statically.\\\", \\\"severity\\\": \\\"error\\\", \\\"suggested_fix\\\": \\\"Restart the server with --permission-mode trusted for local development inline scripts.\\\", \\\"suggested_server_flag\\\": \\\"--permission-mode trusted\\\"}], \\\"error\\\": {\\\"category\\\": \\\"permission\\\", \\\"code\\\": \\\"PERMISSION_REQUIRED\\\", \\\"details\\\": {\\\"command\\\": \\\"python\\\", \\\"option\\\": \\\"-c\\\", \\\"permission\\\": \\\"inline_script\\\"}, \\\"message\\\": \\\"Inline interpreter or shell code requires explicit permission because network and filesystem effects cannot be verified statically.\\\", \\\"retryable\\\": false}, \\\"ok\\\": false, \\\"permission_request\\\": {\\\"permission\\\": \\\"inline_script\\\", \\\"retryable\\\": true, \\\"status\\\": \\\"required\\\", \\\"tool_name\\\": \\\"exec_command\\\"}}\"}], \"structuredContent\": {\"ok\": false, \"error\": {\"code\": \"PERMISSION_REQUIRED\", \"message\": \"Inline interpreter or shell code requires explicit permission because network and filesystem effects cannot be verified statically.\", \"category\": \"permission\", \"retryable\": false, \"details\": {\"permission\": \"inline_script\", \"command\": \"python\", \"option\": \"-c\"}}, \"diagnostics\": [{\"code\": \"INLINE_SCRIPT_PERMISSION_REQUIRED\", \"severity\": \"error\", \"evidence\": \"Inline interpreter or shell code requires explicit permission because network and filesystem effects cannot be verified statically.\", \"suggested_fix\": \"Restart the server with --permission-mode trusted for local development inline scripts.\", \"suggested_server_flag\": \"--permission-mode trusted\"}], \"permission_request\": {\"tool_name\": \"exec_command\", \"permission\": \"inline_script\", \"status\": \"required\", \"retryable\": true}}, \"isError\": true}}",
+  "error": null,
+  "duration": 0.0010325908660888672
+}

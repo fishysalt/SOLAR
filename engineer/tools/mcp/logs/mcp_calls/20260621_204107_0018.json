@@ -1,0 +1,54 @@
+{
+  "call_id": "20260621_204107_0018",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:42:25.722799",
+  "server_name": "CodeTools",
+  "tool_name": "exec_command",
+  "arguments": {
+    "timeout_ms": 300000,
+    "cmd": "more",
+    "yield_time_ms": 500
+  },
+  "request_id": "CodeTools_20",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_20\", \"method\": \"tools/call\", \"params\": {\"name\": \"exec_command\", \"arguments\": {\"timeout_ms\": 300000, \"cmd\": \"more\", \"yield_time_ms\": 500}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"elapsed_ms\": 57, \"exit_code\": 0, \"ok\": true, \"session_id\": \"3qsM_Z0m_rRI-h4OinWeaA-I\", \"signal\": null, \"status\": \"exited\", \"stderr\": \"\", \"stderr_dropped_bytes\": 0, \"stderr_omitted_bytes\": 0, \"stderr_output_bytes\": 0, \"stderr_output_lines\": 1, \"stderr_truncated\": false, \"stderr_truncated_by\": null, \"stdout\": \"\\r\\n\", \"stdout_dropped_bytes\": 0, \"stdout_omitted_bytes\": 0, \"stdout_output_bytes\": 2, \"stdout_output_lines\": 2, \"stdout_truncated\": false, \"stdout_truncated_by\": null, \"timed_out\": false, \"truncated\": false, \"warnings\": [\"Linux Landlock filesystem confinement is unavailable on this host; exec_command ran with policy checks only. Use an external sandbox before running untrusted commands.\"]}"
+      }
+    ],
+    "structuredContent": {
+      "session_id": "3qsM_Z0m_rRI-h4OinWeaA-I",
+      "status": "exited",
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "stdout": "\r\n",
+      "stderr": "",
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "stdout_truncated_by": null,
+      "stderr_truncated_by": null,
+      "stdout_output_lines": 2,
+      "stderr_output_lines": 1,
+      "stdout_output_bytes": 2,
+      "stderr_output_bytes": 0,
+      "stdout_dropped_bytes": 0,
+      "stderr_dropped_bytes": 0,
+      "stdout_omitted_bytes": 0,
+      "stderr_omitted_bytes": 0,
+      "truncated": false,
+      "ok": true,
+      "warnings": [
+        "Linux Landlock filesystem confinement is unavailable on this host; exec_command ran with policy checks only. Use an external sandbox before running untrusted commands."
+      ],
+      "elapsed_ms": 57
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_20\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"elapsed_ms\\\": 57, \\\"exit_code\\\": 0, \\\"ok\\\": true, \\\"session_id\\\": \\\"3qsM_Z0m_rRI-h4OinWeaA-I\\\", \\\"signal\\\": null, \\\"status\\\": \\\"exited\\\", \\\"stderr\\\": \\\"\\\", \\\"stderr_dropped_bytes\\\": 0, \\\"stderr_omitted_bytes\\\": 0, \\\"stderr_output_bytes\\\": 0, \\\"stderr_output_lines\\\": 1, \\\"stderr_truncated\\\": false, \\\"stderr_truncated_by\\\": null, \\\"stdout\\\": \\\"\\\\r\\\\n\\\", \\\"stdout_dropped_bytes\\\": 0, \\\"stdout_omitted_bytes\\\": 0, \\\"stdout_output_bytes\\\": 2, \\\"stdout_output_lines\\\": 2, \\\"stdout_truncated\\\": false, \\\"stdout_truncated_by\\\": null, \\\"timed_out\\\": false, \\\"truncated\\\": false, \\\"warnings\\\": [\\\"Linux Landlock filesystem confinement is unavailable on this host; exec_command ran with policy checks only. Use an external sandbox before running untrusted commands.\\\"]}\"}], \"structuredContent\": {\"session_id\": \"3qsM_Z0m_rRI-h4OinWeaA-I\", \"status\": \"exited\", \"exit_code\": 0, \"signal\": null, \"timed_out\": false, \"stdout\": \"\\r\\n\", \"stderr\": \"\", \"stdout_truncated\": false, \"stderr_truncated\": false, \"stdout_truncated_by\": null, \"stderr_truncated_by\": null, \"stdout_output_lines\": 2, \"stderr_output_lines\": 1, \"stdout_output_bytes\": 2, \"stderr_output_bytes\": 0, \"stdout_dropped_bytes\": 0, \"stderr_dropped_bytes\": 0, \"stdout_omitted_bytes\": 0, \"stderr_omitted_bytes\": 0, \"truncated\": false, \"ok\": true, \"warnings\": [\"Linux Landlock filesystem confinement is unavailable on this host; exec_command ran with policy checks only. Use an external sandbox before running untrusted commands.\"], \"elapsed_ms\": 57}, \"isError\": false}}",
+  "error": null,
+  "duration": 0.060259103775024414
+}

@@ -1,0 +1,25 @@
+{
+  "call_id": "20260621_204107_0030",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:53:24.691224",
+  "server_name": "SmartSearch",
+  "tool_name": "ai_search_web",
+  "arguments": {
+    "query": "hello world",
+    "count": 3
+  },
+  "request_id": "SmartSearch_5",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"SmartSearch_5\", \"method\": \"tools/call\", \"params\": {\"name\": \"ai_search_web\", \"arguments\": {\"query\": \"hello world\", \"count\": 3}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "🔍 **网络搜索** (百度)\n\n**关键词**: hello world\n**搜索链接**: https://www.baidu.com/s?wd=hello%20world&rn=3\n\n✅ 详细信息已保存至: E:\\Agents\\SOLAR_MA\\engineer\\.search-results\\web-search-2026-06-21T12-53-24.md\n💡 使用 WebFetch 工具访问搜索链接获取结果"
+      }
+    ]
+  },
+  "raw_response": "{\"result\": {\"content\": [{\"type\": \"text\", \"text\": \"🔍 **网络搜索** (百度)\\n\\n**关键词**: hello world\\n**搜索链接**: https://www.baidu.com/s?wd=hello%20world&rn=3\\n\\n✅ 详细信息已保存至: E:\\\\Agents\\\\SOLAR_MA\\\\engineer\\\\.search-results\\\\web-search-2026-06-21T12-53-24.md\\n💡 使用 WebFetch 工具访问搜索链接获取结果\"}]}, \"jsonrpc\": \"2.0\", \"id\": \"SmartSearch_5\"}",
+  "error": null,
+  "duration": 0.0018131732940673828
+}

@@ -1,0 +1,25 @@
+{
+  "call_id": "20260621_204107_0031",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:53:24.693950",
+  "server_name": "FreeWeb",
+  "tool_name": "web_search",
+  "arguments": {
+    "query": "hello world",
+    "maxResults": 2
+  },
+  "request_id": "FreeWeb_5",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"FreeWeb_5\", \"method\": \"tools/call\", \"params\": {\"name\": \"web_search\", \"arguments\": {\"query\": \"hello world\", \"maxResults\": 2}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "No web results found for \"hello world\". Engines tried: yahoo:blocked, marginalia:blocked, ask:blocked, duckduckgo:blocked."
+      }
+    ]
+  },
+  "raw_response": "{\"result\": {\"content\": [{\"type\": \"text\", \"text\": \"No web results found for \\\"hello world\\\". Engines tried: yahoo:blocked, marginalia:blocked, ask:blocked, duckduckgo:blocked.\"}]}, \"jsonrpc\": \"2.0\", \"id\": \"FreeWeb_5\"}",
+  "error": null,
+  "duration": 8.009340763092041
+}

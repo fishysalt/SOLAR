@@ -60,12 +60,11 @@ class MCPClient:
         if env_path.exists():
             load_dotenv(dotenv_path=env_path)
             print(f"   📝 [MCPClient] 已加载环境变量: {env_path}")
-            dashscope_key = os.environ.get("DASHSCOPE_API_KEY")
-            minimax_key = os.environ.get("MINIMAX_API_KEY")
-            if dashscope_key:
-                print(f"   🔑 [MCPClient] DASHSCOPE_API_KEY 已加载 (长度: {len(dashscope_key)})")
-            if minimax_key:
-                print(f"   🔑 [MCPClient] MINIMAX_API_KEY 已加载 (长度: {len(minimax_key)})")
+            api_key = os.environ.get("MINIMAX_API_KEY")
+            if api_key:
+                print(f"   🔑 [MCPClient] MINIMAX_API_KEY 已加载 (长度: {len(api_key)})")
+            else:
+                print(f"   ⚠️ [MCPClient] MINIMAX_API_KEY 未找到")
         else:
             print(f"   ⚠️ [MCPClient] .env 文件不存在: {env_path}")
     
@@ -75,15 +74,19 @@ class MCPClient:
             # 加载环境变量
             self._load_env_file()
             
-            # 合并环境变量
+            # 合并环境变量（当前进程的环境变量 + self.env）
             env = {**os.environ, **self.env}
             
-            # 强制设置 UTF-8 编码，避免中文乱码和编码错误
+            # 强制设置 UTF-8 编码，避免中文和特殊字符导致的解码错误
             env["PYTHONIOENCODING"] = "utf-8"
             env["PYTHONUTF8"] = "1"
             
-            # 打印调试信息
-            print(f"   🚀 [MCPClient] 启动 {self.server_name}: {self.command} {self.args}")
+            # 打印传递给子进程的关键变量
+            minimax_key = env.get("MINIMAX_API_KEY")
+            if minimax_key:
+                print(f"   🔑 [MCPClient] 传递给子进程的 MINIMAX_API_KEY: {minimax_key[:10]}...")
+            else:
+                print(f"   ⚠️ [MCPClient] 传递给子进程的 MINIMAX_API_KEY 为空")
             
             # 启动子进程，强制使用 UTF-8 编码
             self._process = subprocess.Popen(
@@ -94,8 +97,8 @@ class MCPClient:
                 env=env,
                 text=True,
                 bufsize=1,
-                encoding='utf-8',      # 强制 UTF-8
-                errors='replace'       # 无法解码的字符替换为 �
+                encoding='utf-8',      # 强制使用 UTF-8 解码输出
+                errors='replace'       # 无法解码的字符替换为 �，不抛出异常
             )
             
             self._running = True
@@ -106,7 +109,6 @@ class MCPClient:
             
             # 初始化连接
             if not self._initialize():
-                print(f"   ❌ [MCPClient] {self.server_name} 初始化失败")
                 return False
             
             # 发现工具
@@ -152,10 +154,6 @@ class MCPClient:
                     server_name=self.server_name
                 )
                 self.tools.append(tool)
-            
-            # 打印发现的工具
-            tool_names = [t.name for t in self.tools]
-            print(f"   🔧 [MCPClient] {self.server_name} 发现工具: {tool_names}")
     
     def _send_request(self, method: str, params: Dict) -> Optional[Dict]:
         """发送 JSON-RPC 请求并等待响应"""
@@ -176,9 +174,9 @@ class MCPClient:
         # 发送请求
         self._send_raw(request)
         
-        # 等待响应（超时 30 秒）
+        # 等待响应（超时 120 秒）
         try:
-            response = response_queue.get(timeout=30)
+            response = response_queue.get(timeout=120)
             self._pending_requests.pop(request_id, None)
             
             if "error" in response:

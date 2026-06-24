@@ -55,11 +55,11 @@ def main():
                 msg = gr.Textbox(label="输入任务", placeholder="例如：自我介绍、记住我喜欢简约风格、查看我的记忆...", lines=2)
                 clear_chat_btn = gr.Button("清空对话")
                 
-                def respond(message, history):
+                async def respond(message, history):
                     if not message:
                         return "", history
                     
-                    result = scavenger.handle_task(message, [])
+                    result = await engineer.handle_task(message, [])
                     response = result.get("message", "处理完成")
                     
                     history = history or []

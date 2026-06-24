@@ -1,0 +1,25 @@
+{
+  "call_id": "20260621_204107_0021",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:45:49.959024",
+  "server_name": "FileSystem",
+  "tool_name": "list_allowed_directories",
+  "arguments": {},
+  "request_id": "FileSystem_3",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"FileSystem_3\", \"method\": \"tools/call\", \"params\": {\"name\": \"list_allowed_directories\", \"arguments\": {}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Allowed directories:\nE:\\Agents\\SOLAR_MA"
+      }
+    ],
+    "structuredContent": {
+      "content": "Allowed directories:\nE:\\Agents\\SOLAR_MA"
+    }
+  },
+  "raw_response": "{\"result\": {\"content\": [{\"type\": \"text\", \"text\": \"Allowed directories:\\nE:\\\\Agents\\\\SOLAR_MA\"}], \"structuredContent\": {\"content\": \"Allowed directories:\\nE:\\\\Agents\\\\SOLAR_MA\"}}, \"jsonrpc\": \"2.0\", \"id\": \"FileSystem_3\"}",
+  "error": null,
+  "duration": 0.002210855484008789
+}

@@ -1,0 +1,61 @@
+{
+  "call_id": "20260621_204107_0006",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:41:52.008720",
+  "server_name": "CodeTools",
+  "tool_name": "git_log",
+  "arguments": {
+    "max_count": 3
+  },
+  "request_id": "CodeTools_8",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_8\", \"method\": \"tools/call\", \"params\": {\"name\": \"git_log\", \"arguments\": {\"max_count\": 3}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"commits\": [{\"author_date\": \"2026-06-13T13:50:35+08:00\", \"author_email\": \"926347860@qq.com\", \"author_name\": \"saltyfish\", \"hash\": \"a330e1add552283f348e7956552b7f0adb59c895\", \"short_hash\": \"a330e1a\", \"subject\": \"Merge branch 'main' of github.com:fishysalt/SOLAR\"}, {\"author_date\": \"2026-06-13T13:50:27+08:00\", \"author_email\": \"926347860@qq.com\", \"author_name\": \"saltyfish\", \"hash\": \"029c549ac89de0b56b2e8670ae27aab7c7999799\", \"short_hash\": \"029c549\", \"subject\": \"chore: \\u66f4\\u65b0 .gitignore \\u5ffd\\u7565\\u6240\\u6709 MCP \\u914d\\u7f6e\"}, {\"author_date\": \"2026-06-13T13:49:15+08:00\", \"author_email\": \"926347860@qq.com\", \"author_name\": \"saltyfish\", \"hash\": \"6cec052698e4e551bac5d38addeba3b44e69570a\", \"short_hash\": \"6cec052\", \"subject\": \"chore: \\u4ece\\u4ed3\\u5e93\\u79fb\\u9664 scavenger MCP \\u914d\\u7f6e\\u6587\\u4ef6\"}], \"is_repo\": true, \"ok\": true, \"path\": \".\", \"ref\": \"HEAD\", \"truncated\": true, \"warnings\": [\"commit limit reached\"]}"
+      }
+    ],
+    "structuredContent": {
+      "is_repo": true,
+      "ref": "HEAD",
+      "path": ".",
+      "commits": [
+        {
+          "hash": "a330e1add552283f348e7956552b7f0adb59c895",
+          "short_hash": "a330e1a",
+          "author_name": "saltyfish",
+          "author_email": "926347860@qq.com",
+          "author_date": "2026-06-13T13:50:35+08:00",
+          "subject": "Merge branch 'main' of github.com:fishysalt/SOLAR"
+        },
+        {
+          "hash": "029c549ac89de0b56b2e8670ae27aab7c7999799",
+          "short_hash": "029c549",
+          "author_name": "saltyfish",
+          "author_email": "926347860@qq.com",
+          "author_date": "2026-06-13T13:50:27+08:00",
+          "subject": "chore: 更新 .gitignore 忽略所有 MCP 配置"
+        },
+        {
+          "hash": "6cec052698e4e551bac5d38addeba3b44e69570a",
+          "short_hash": "6cec052",
+          "author_name": "saltyfish",
+          "author_email": "926347860@qq.com",
+          "author_date": "2026-06-13T13:49:15+08:00",
+          "subject": "chore: 从仓库移除 scavenger MCP 配置文件"
+        }
+      ],
+      "truncated": true,
+      "warnings": [
+        "commit limit reached"
+      ],
+      "ok": true
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_8\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"commits\\\": [{\\\"author_date\\\": \\\"2026-06-13T13:50:35+08:00\\\", \\\"author_email\\\": \\\"926347860@qq.com\\\", \\\"author_name\\\": \\\"saltyfish\\\", \\\"hash\\\": \\\"a330e1add552283f348e7956552b7f0adb59c895\\\", \\\"short_hash\\\": \\\"a330e1a\\\", \\\"subject\\\": \\\"Merge branch 'main' of github.com:fishysalt/SOLAR\\\"}, {\\\"author_date\\\": \\\"2026-06-13T13:50:27+08:00\\\", \\\"author_email\\\": \\\"926347860@qq.com\\\", \\\"author_name\\\": \\\"saltyfish\\\", \\\"hash\\\": \\\"029c549ac89de0b56b2e8670ae27aab7c7999799\\\", \\\"short_hash\\\": \\\"029c549\\\", \\\"subject\\\": \\\"chore: \\\\u66f4\\\\u65b0 .gitignore \\\\u5ffd\\\\u7565\\\\u6240\\\\u6709 MCP \\\\u914d\\\\u7f6e\\\"}, {\\\"author_date\\\": \\\"2026-06-13T13:49:15+08:00\\\", \\\"author_email\\\": \\\"926347860@qq.com\\\", \\\"author_name\\\": \\\"saltyfish\\\", \\\"hash\\\": \\\"6cec052698e4e551bac5d38addeba3b44e69570a\\\", \\\"short_hash\\\": \\\"6cec052\\\", \\\"subject\\\": \\\"chore: \\\\u4ece\\\\u4ed3\\\\u5e93\\\\u79fb\\\\u9664 scavenger MCP \\\\u914d\\\\u7f6e\\\\u6587\\\\u4ef6\\\"}], \\\"is_repo\\\": true, \\\"ok\\\": true, \\\"path\\\": \\\".\\\", \\\"ref\\\": \\\"HEAD\\\", \\\"truncated\\\": true, \\\"warnings\\\": [\\\"commit limit reached\\\"]}\"}], \"structuredContent\": {\"is_repo\": true, \"ref\": \"HEAD\", \"path\": \".\", \"commits\": [{\"hash\": \"a330e1add552283f348e7956552b7f0adb59c895\", \"short_hash\": \"a330e1a\", \"author_name\": \"saltyfish\", \"author_email\": \"926347860@qq.com\", \"author_date\": \"2026-06-13T13:50:35+08:00\", \"subject\": \"Merge branch 'main' of github.com:fishysalt/SOLAR\"}, {\"hash\": \"029c549ac89de0b56b2e8670ae27aab7c7999799\", \"short_hash\": \"029c549\", \"author_name\": \"saltyfish\", \"author_email\": \"926347860@qq.com\", \"author_date\": \"2026-06-13T13:50:27+08:00\", \"subject\": \"chore: 更新 .gitignore 忽略所有 MCP 配置\"}, {\"hash\": \"6cec052698e4e551bac5d38addeba3b44e69570a\", \"short_hash\": \"6cec052\", \"author_name\": \"saltyfish\", \"author_email\": \"926347860@qq.com\", \"author_date\": \"2026-06-13T13:49:15+08:00\", \"subject\": \"chore: 从仓库移除 scavenger MCP 配置文件\"}], \"truncated\": true, \"warnings\": [\"commit limit reached\"], \"ok\": true}, \"isError\": false}}",
+  "error": null,
+  "duration": 0.09709930419921875
+}

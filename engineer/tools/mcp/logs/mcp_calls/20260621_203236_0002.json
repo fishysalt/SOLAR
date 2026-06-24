@@ -1,0 +1,39 @@
+{
+  "call_id": "20260621_203236_0002",
+  "session_id": "20260621_203236",
+  "timestamp": "2026-06-21T20:33:08.808639",
+  "server_name": "CodeTools",
+  "tool_name": "check_exec_environment",
+  "arguments": {},
+  "request_id": "CodeTools_4",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_4\", \"method\": \"tools/call\", \"params\": {\"name\": \"check_exec_environment\", \"arguments\": {}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"cache_dir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\cache\", \"global_tmp_write\": \"blocked\", \"home\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\home\", \"landlock_abi\": null, \"landlock_enabled\": false, \"network_allowed\": false, \"ok\": true, \"permission_mode\": \"safe\", \"runtime_dir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\", \"tmpdir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\tmp\", \"warnings\": [\"Linux Landlock filesystem confinement is unavailable\"], \"workspace\": \"E:\\\\Agents\\\\SOLAR_MA\"}"
+      }
+    ],
+    "structuredContent": {
+      "ok": true,
+      "workspace": "E:\\Agents\\SOLAR_MA",
+      "permission_mode": "safe",
+      "network_allowed": false,
+      "runtime_dir": "C:\\Users\\92634\\AppData\\Local\\Temp\\coding-tools-mcp\\8089ff7dac288b0a\\gA9QVFD9GaVmVo6m",
+      "home": "C:\\Users\\92634\\AppData\\Local\\Temp\\coding-tools-mcp\\8089ff7dac288b0a\\gA9QVFD9GaVmVo6m\\home",
+      "tmpdir": "C:\\Users\\92634\\AppData\\Local\\Temp\\coding-tools-mcp\\8089ff7dac288b0a\\gA9QVFD9GaVmVo6m\\tmp",
+      "cache_dir": "C:\\Users\\92634\\AppData\\Local\\Temp\\coding-tools-mcp\\8089ff7dac288b0a\\gA9QVFD9GaVmVo6m\\cache",
+      "landlock_enabled": false,
+      "landlock_abi": null,
+      "global_tmp_write": "blocked",
+      "warnings": [
+        "Linux Landlock filesystem confinement is unavailable"
+      ]
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_4\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"cache_dir\\\": \\\"C:\\\\\\\\Users\\\\\\\\92634\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\coding-tools-mcp\\\\\\\\8089ff7dac288b0a\\\\\\\\gA9QVFD9GaVmVo6m\\\\\\\\cache\\\", \\\"global_tmp_write\\\": \\\"blocked\\\", \\\"home\\\": \\\"C:\\\\\\\\Users\\\\\\\\92634\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\coding-tools-mcp\\\\\\\\8089ff7dac288b0a\\\\\\\\gA9QVFD9GaVmVo6m\\\\\\\\home\\\", \\\"landlock_abi\\\": null, \\\"landlock_enabled\\\": false, \\\"network_allowed\\\": false, \\\"ok\\\": true, \\\"permission_mode\\\": \\\"safe\\\", \\\"runtime_dir\\\": \\\"C:\\\\\\\\Users\\\\\\\\92634\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\coding-tools-mcp\\\\\\\\8089ff7dac288b0a\\\\\\\\gA9QVFD9GaVmVo6m\\\", \\\"tmpdir\\\": \\\"C:\\\\\\\\Users\\\\\\\\92634\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\coding-tools-mcp\\\\\\\\8089ff7dac288b0a\\\\\\\\gA9QVFD9GaVmVo6m\\\\\\\\tmp\\\", \\\"warnings\\\": [\\\"Linux Landlock filesystem confinement is unavailable\\\"], \\\"workspace\\\": \\\"E:\\\\\\\\Agents\\\\\\\\SOLAR_MA\\\"}\"}], \"structuredContent\": {\"ok\": true, \"workspace\": \"E:\\\\Agents\\\\SOLAR_MA\", \"permission_mode\": \"safe\", \"network_allowed\": false, \"runtime_dir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\", \"home\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\home\", \"tmpdir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\tmp\", \"cache_dir\": \"C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\Temp\\\\coding-tools-mcp\\\\8089ff7dac288b0a\\\\gA9QVFD9GaVmVo6m\\\\cache\", \"landlock_enabled\": false, \"landlock_abi\": null, \"global_tmp_write\": \"blocked\", \"warnings\": [\"Linux Landlock filesystem confinement is unavailable\"]}, \"isError\": false}}",
+  "error": null,
+  "duration": 0.00015020370483398438
+}

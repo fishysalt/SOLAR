@@ -1,0 +1,79 @@
+{
+  "call_id": "20260621_204107_0026",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:46:04.829586",
+  "server_name": "CodeTools",
+  "tool_name": "search_text",
+  "arguments": {
+    "query": "def ",
+    "path": ".",
+    "max_results": 5
+  },
+  "request_id": "CodeTools_24",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_24\", \"method\": \"tools/call\", \"params\": {\"name\": \"search_text\", \"arguments\": {\"query\": \"def \", \"path\": \".\", \"max_results\": 5}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"engine\": \"rg\", \"matches\": [{\"after\": [], \"before\": [], \"column\": 5, \"line\": 21, \"path\": \"conductor/agent_launcher.py\", \"preview\": \"    def __init__(self):\"}, {\"after\": [], \"before\": [], \"column\": 5, \"line\": 25, \"path\": \"conductor/agent_launcher.py\", \"preview\": \"    def _find_available_port(self, preferred: int) -> int:\"}, {\"after\": [], \"before\": [], \"column\": 5, \"line\": 36, \"path\": \"conductor/agent_launcher.py\", \"preview\": \"    def _check_http_health(self, port: int, timeout: float = 2.0) -> bool:\"}, {\"after\": [], \"before\": [], \"column\": 5, \"line\": 45, \"path\": \"conductor/agent_launcher.py\", \"preview\": \"    def _register_to_http_client(self, agent_name: str, port: int):\"}, {\"after\": [], \"before\": [], \"column\": 5, \"line\": 55, \"path\": \"conductor/agent_launcher.py\", \"preview\": \"    def start_agent(self, agent_name: str) -> bool:\"}], \"ok\": true, \"query\": \"def \", \"total_matches\": 716, \"truncated\": true, \"warnings\": [\"result limit reached\"]}"
+      }
+    ],
+    "structuredContent": {
+      "query": "def ",
+      "matches": [
+        {
+          "path": "conductor/agent_launcher.py",
+          "line": 21,
+          "column": 5,
+          "preview": "    def __init__(self):",
+          "before": [],
+          "after": []
+        },
+        {
+          "path": "conductor/agent_launcher.py",
+          "line": 25,
+          "column": 5,
+          "preview": "    def _find_available_port(self, preferred: int) -> int:",
+          "before": [],
+          "after": []
+        },
+        {
+          "path": "conductor/agent_launcher.py",
+          "line": 36,
+          "column": 5,
+          "preview": "    def _check_http_health(self, port: int, timeout: float = 2.0) -> bool:",
+          "before": [],
+          "after": []
+        },
+        {
+          "path": "conductor/agent_launcher.py",
+          "line": 45,
+          "column": 5,
+          "preview": "    def _register_to_http_client(self, agent_name: str, port: int):",
+          "before": [],
+          "after": []
+        },
+        {
+          "path": "conductor/agent_launcher.py",
+          "line": 55,
+          "column": 5,
+          "preview": "    def start_agent(self, agent_name: str) -> bool:",
+          "before": [],
+          "after": []
+        }
+      ],
+      "total_matches": 716,
+      "truncated": true,
+      "engine": "rg",
+      "warnings": [
+        "result limit reached"
+      ],
+      "ok": true
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_24\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"engine\\\": \\\"rg\\\", \\\"matches\\\": [{\\\"after\\\": [], \\\"before\\\": [], \\\"column\\\": 5, \\\"line\\\": 21, \\\"path\\\": \\\"conductor/agent_launcher.py\\\", \\\"preview\\\": \\\"    def __init__(self):\\\"}, {\\\"after\\\": [], \\\"before\\\": [], \\\"column\\\": 5, \\\"line\\\": 25, \\\"path\\\": \\\"conductor/agent_launcher.py\\\", \\\"preview\\\": \\\"    def _find_available_port(self, preferred: int) -> int:\\\"}, {\\\"after\\\": [], \\\"before\\\": [], \\\"column\\\": 5, \\\"line\\\": 36, \\\"path\\\": \\\"conductor/agent_launcher.py\\\", \\\"preview\\\": \\\"    def _check_http_health(self, port: int, timeout: float = 2.0) -> bool:\\\"}, {\\\"after\\\": [], \\\"before\\\": [], \\\"column\\\": 5, \\\"line\\\": 45, \\\"path\\\": \\\"conductor/agent_launcher.py\\\", \\\"preview\\\": \\\"    def _register_to_http_client(self, agent_name: str, port: int):\\\"}, {\\\"after\\\": [], \\\"before\\\": [], \\\"column\\\": 5, \\\"line\\\": 55, \\\"path\\\": \\\"conductor/agent_launcher.py\\\", \\\"preview\\\": \\\"    def start_agent(self, agent_name: str) -> bool:\\\"}], \\\"ok\\\": true, \\\"query\\\": \\\"def \\\", \\\"total_matches\\\": 716, \\\"truncated\\\": true, \\\"warnings\\\": [\\\"result limit reached\\\"]}\"}], \"structuredContent\": {\"query\": \"def \", \"matches\": [{\"path\": \"conductor/agent_launcher.py\", \"line\": 21, \"column\": 5, \"preview\": \"    def __init__(self):\", \"before\": [], \"after\": []}, {\"path\": \"conductor/agent_launcher.py\", \"line\": 25, \"column\": 5, \"preview\": \"    def _find_available_port(self, preferred: int) -> int:\", \"before\": [], \"after\": []}, {\"path\": \"conductor/agent_launcher.py\", \"line\": 36, \"column\": 5, \"preview\": \"    def _check_http_health(self, port: int, timeout: float = 2.0) -> bool:\", \"before\": [], \"after\": []}, {\"path\": \"conductor/agent_launcher.py\", \"line\": 45, \"column\": 5, \"preview\": \"    def _register_to_http_client(self, agent_name: str, port: int):\", \"before\": [], \"after\": []}, {\"path\": \"conductor/agent_launcher.py\", \"line\": 55, \"column\": 5, \"preview\": \"    def start_agent(self, agent_name: str) -> bool:\", \"before\": [], \"after\": []}], \"total_matches\": 716, \"truncated\": true, \"engine\": \"rg\", \"warnings\": [\"result limit reached\"], \"ok\": true}, \"isError\": false}}",
+  "error": null,
+  "duration": 0.08617281913757324
+}

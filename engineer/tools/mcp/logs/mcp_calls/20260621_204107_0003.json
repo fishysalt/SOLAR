@@ -1,0 +1,96 @@
+{
+  "call_id": "20260621_204107_0003",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:41:48.428560",
+  "server_name": "CodeTools",
+  "tool_name": "git_status",
+  "arguments": {},
+  "request_id": "CodeTools_5",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_5\", \"method\": \"tools/call\", \"params\": {\"name\": \"git_status\", \"arguments\": {}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"ahead\": 0, \"behind\": 0, \"branch\": \"main\", \"clean\": false, \"entries\": [{\"index_status\": \" \", \"original_path\": null, \"path\": \"conductor/agent.py\", \"worktree_status\": \"M\"}, {\"index_status\": \" \", \"original_path\": null, \"path\": \"creator/agent.py\", \"worktree_status\": \"M\"}, {\"index_status\": \" \", \"original_path\": null, \"path\": \"creator/tools/mcp/client.py\", \"worktree_status\": \"M\"}, {\"index_status\": \" \", \"original_path\": null, \"path\": \"creator/ui.py\", \"worktree_status\": \"M\"}, {\"index_status\": \" \", \"original_path\": null, \"path\": \"scavenger/tools/mcp/client.py\", \"worktree_status\": \"M\"}, {\"index_status\": \" \", \"original_path\": null, \"path\": \"scavenger/ui.py\", \"worktree_status\": \"M\"}, {\"index_status\": \"?\", \"original_path\": null, \"path\": \"engineer/\", \"worktree_status\": \"?\"}, {\"index_status\": \"?\", \"original_path\": null, \"path\": \"shared/error_logger.py\", \"worktree_status\": \"?\"}, {\"index_status\": \"?\", \"original_path\": null, \"path\": \"test.txt\", \"worktree_status\": \"?\"}, {\"index_status\": \"?\", \"original_path\": null, \"path\": \"test_notebook.ipynb\", \"worktree_status\": \"?\"}], \"head\": \"a330e1add552283f348e7956552b7f0adb59c895\", \"is_repo\": true, \"ok\": true, \"truncated\": false, \"upstream\": \"origin/main\"}"
+      }
+    ],
+    "structuredContent": {
+      "is_repo": true,
+      "branch": "main",
+      "head": "a330e1add552283f348e7956552b7f0adb59c895",
+      "upstream": "origin/main",
+      "ahead": 0,
+      "behind": 0,
+      "clean": false,
+      "entries": [
+        {
+          "path": "conductor/agent.py",
+          "original_path": null,
+          "index_status": " ",
+          "worktree_status": "M"
+        },
+        {
+          "path": "creator/agent.py",
+          "original_path": null,
+          "index_status": " ",
+          "worktree_status": "M"
+        },
+        {
+          "path": "creator/tools/mcp/client.py",
+          "original_path": null,
+          "index_status": " ",
+          "worktree_status": "M"
+        },
+        {
+          "path": "creator/ui.py",
+          "original_path": null,
+          "index_status": " ",
+          "worktree_status": "M"
+        },
+        {
+          "path": "scavenger/tools/mcp/client.py",
+          "original_path": null,
+          "index_status": " ",
+          "worktree_status": "M"
+        },
+        {
+          "path": "scavenger/ui.py",
+          "original_path": null,
+          "index_status": " ",
+          "worktree_status": "M"
+        },
+        {
+          "path": "engineer/",
+          "original_path": null,
+          "index_status": "?",
+          "worktree_status": "?"
+        },
+        {
+          "path": "shared/error_logger.py",
+          "original_path": null,
+          "index_status": "?",
+          "worktree_status": "?"
+        },
+        {
+          "path": "test.txt",
+          "original_path": null,
+          "index_status": "?",
+          "worktree_status": "?"
+        },
+        {
+          "path": "test_notebook.ipynb",
+          "original_path": null,
+          "index_status": "?",
+          "worktree_status": "?"
+        }
+      ],
+      "truncated": false,
+      "ok": true
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_5\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"ahead\\\": 0, \\\"behind\\\": 0, \\\"branch\\\": \\\"main\\\", \\\"clean\\\": false, \\\"entries\\\": [{\\\"index_status\\\": \\\" \\\", \\\"original_path\\\": null, \\\"path\\\": \\\"conductor/agent.py\\\", \\\"worktree_status\\\": \\\"M\\\"}, {\\\"index_status\\\": \\\" \\\", \\\"original_path\\\": null, \\\"path\\\": \\\"creator/agent.py\\\", \\\"worktree_status\\\": \\\"M\\\"}, {\\\"index_status\\\": \\\" \\\", \\\"original_path\\\": null, \\\"path\\\": \\\"creator/tools/mcp/client.py\\\", \\\"worktree_status\\\": \\\"M\\\"}, {\\\"index_status\\\": \\\" \\\", \\\"original_path\\\": null, \\\"path\\\": \\\"creator/ui.py\\\", \\\"worktree_status\\\": \\\"M\\\"}, {\\\"index_status\\\": \\\" \\\", \\\"original_path\\\": null, \\\"path\\\": \\\"scavenger/tools/mcp/client.py\\\", \\\"worktree_status\\\": \\\"M\\\"}, {\\\"index_status\\\": \\\" \\\", \\\"original_path\\\": null, \\\"path\\\": \\\"scavenger/ui.py\\\", \\\"worktree_status\\\": \\\"M\\\"}, {\\\"index_status\\\": \\\"?\\\", \\\"original_path\\\": null, \\\"path\\\": \\\"engineer/\\\", \\\"worktree_status\\\": \\\"?\\\"}, {\\\"index_status\\\": \\\"?\\\", \\\"original_path\\\": null, \\\"path\\\": \\\"shared/error_logger.py\\\", \\\"worktree_status\\\": \\\"?\\\"}, {\\\"index_status\\\": \\\"?\\\", \\\"original_path\\\": null, \\\"path\\\": \\\"test.txt\\\", \\\"worktree_status\\\": \\\"?\\\"}, {\\\"index_status\\\": \\\"?\\\", \\\"original_path\\\": null, \\\"path\\\": \\\"test_notebook.ipynb\\\", \\\"worktree_status\\\": \\\"?\\\"}], \\\"head\\\": \\\"a330e1add552283f348e7956552b7f0adb59c895\\\", \\\"is_repo\\\": true, \\\"ok\\\": true, \\\"truncated\\\": false, \\\"upstream\\\": \\\"origin/main\\\"}\"}], \"structuredContent\": {\"is_repo\": true, \"branch\": \"main\", \"head\": \"a330e1add552283f348e7956552b7f0adb59c895\", \"upstream\": \"origin/main\", \"ahead\": 0, \"behind\": 0, \"clean\": false, \"entries\": [{\"path\": \"conductor/agent.py\", \"original_path\": null, \"index_status\": \" \", \"worktree_status\": \"M\"}, {\"path\": \"creator/agent.py\", \"original_path\": null, \"index_status\": \" \", \"worktree_status\": \"M\"}, {\"path\": \"creator/tools/mcp/client.py\", \"original_path\": null, \"index_status\": \" \", \"worktree_status\": \"M\"}, {\"path\": \"creator/ui.py\", \"original_path\": null, \"index_status\": \" \", \"worktree_status\": \"M\"}, {\"path\": \"scavenger/tools/mcp/client.py\", \"original_path\": null, \"index_status\": \" \", \"worktree_status\": \"M\"}, {\"path\": \"scavenger/ui.py\", \"original_path\": null, \"index_status\": \" \", \"worktree_status\": \"M\"}, {\"path\": \"engineer/\", \"original_path\": null, \"index_status\": \"?\", \"worktree_status\": \"?\"}, {\"path\": \"shared/error_logger.py\", \"original_path\": null, \"index_status\": \"?\", \"worktree_status\": \"?\"}, {\"path\": \"test.txt\", \"original_path\": null, \"index_status\": \"?\", \"worktree_status\": \"?\"}, {\"path\": \"test_notebook.ipynb\", \"original_path\": null, \"index_status\": \"?\", \"worktree_status\": \"?\"}], \"truncated\": false, \"ok\": true}, \"isError\": false}}",
+  "error": null,
+  "duration": 0.17508840560913086
+}

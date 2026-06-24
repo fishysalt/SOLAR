@@ -1,0 +1,25 @@
+{
+  "call_id": "20260621_204107_0028",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:46:04.919914",
+  "server_name": "FreeWeb",
+  "tool_name": "deep_search",
+  "arguments": {
+    "query": "python decorator pattern"
+  },
+  "request_id": "FreeWeb_4",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"FreeWeb_4\", \"method\": \"tools/call\", \"params\": {\"name\": \"deep_search\", \"arguments\": {\"query\": \"python decorator pattern\"}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "browserType.launch: Executable doesn't exist at C:\\Users\\92634\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1217\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+      }
+    ],
+    "isError": true
+  },
+  "raw_response": "{\"result\": {\"content\": [{\"type\": \"text\", \"text\": \"browserType.launch: Executable doesn't exist at C:\\\\Users\\\\92634\\\\AppData\\\\Local\\\\ms-playwright\\\\chromium_headless_shell-1217\\\\chrome-headless-shell-win64\\\\chrome-headless-shell.exe\\n╔════════════════════════════════════════════════════════════╗\\n║ Looks like Playwright was just installed or updated.       ║\\n║ Please run the following command to download new browsers: ║\\n║                                                            ║\\n║     npx playwright install                                 ║\\n║                                                            ║\\n║ <3 Playwright Team                                         ║\\n╚════════════════════════════════════════════════════════════╝\"}], \"isError\": true}, \"jsonrpc\": \"2.0\", \"id\": \"FreeWeb_4\"}",
+  "error": null,
+  "duration": 18.93726348876953
+}

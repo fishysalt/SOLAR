@@ -1,0 +1,15 @@
+{
+    "servers": [
+        {
+            "name": "Wan26Media",
+            "type": "http",
+            "baseUrl": "https://dashscope.aliyuncs.com/api/v1/mcps/Wan26Media/mcp",
+            "headers": {
+                "Authorization": "Bearer ${DASHSCOPE_API_KEY}"
+            },
+            "enabled": false,
+            "description": "阿里云百炼官方图像/视频生成 MCP 服务（需开通）"
+        }
+    ],
+    "_comment": "复制为 config.json 并设置 enabled: true 以启用"
+}

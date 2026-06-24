@@ -1,0 +1,36 @@
+{
+  "call_id": "20260621_204107_0011",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:42:03.130562",
+  "server_name": "CodeTools",
+  "tool_name": "apply_patch",
+  "arguments": {
+    "dry_run": true,
+    "patch": "*** Begin Patch\n3c3\n< return test 333\n---\n> patched by codetools\n*** End Patch"
+  },
+  "request_id": "CodeTools_13",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_13\", \"method\": \"tools/call\", \"params\": {\"name\": \"apply_patch\", \"arguments\": {\"dry_run\": true, \"patch\": \"*** Begin Patch\\n3c3\\n< return test 333\\n---\\n> patched by codetools\\n*** End Patch\"}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\": {\"category\": \"validation\", \"code\": \"PATCH_FAILED\", \"details\": {}, \"message\": \"Unrecognized patch line: 3c3\", \"retryable\": false}, \"ok\": false}"
+      }
+    ],
+    "structuredContent": {
+      "ok": false,
+      "error": {
+        "code": "PATCH_FAILED",
+        "message": "Unrecognized patch line: 3c3",
+        "category": "validation",
+        "retryable": false,
+        "details": {}
+      }
+    },
+    "isError": true
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_13\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"error\\\": {\\\"category\\\": \\\"validation\\\", \\\"code\\\": \\\"PATCH_FAILED\\\", \\\"details\\\": {}, \\\"message\\\": \\\"Unrecognized patch line: 3c3\\\", \\\"retryable\\\": false}, \\\"ok\\\": false}\"}], \"structuredContent\": {\"ok\": false, \"error\": {\"code\": \"PATCH_FAILED\", \"message\": \"Unrecognized patch line: 3c3\", \"category\": \"validation\", \"retryable\": false, \"details\": {}}}, \"isError\": true}}",
+  "error": null,
+  "duration": 0.0002593994140625
+}

@@ -1,0 +1,36 @@
+{
+  "call_id": "20260621_204107_0007",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:41:52.107058",
+  "server_name": "CodeTools",
+  "tool_name": "apply_patch",
+  "arguments": {
+    "patch": "--- a/test.txt\n+++ b/test.txt\n@@ -1 +1 @@\n-return test 333\n+patched by codetools",
+    "dry_run": false
+  },
+  "request_id": "CodeTools_9",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_9\", \"method\": \"tools/call\", \"params\": {\"name\": \"apply_patch\", \"arguments\": {\"patch\": \"--- a/test.txt\\n+++ b/test.txt\\n@@ -1 +1 @@\\n-return test 333\\n+patched by codetools\", \"dry_run\": false}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\": {\"category\": \"validation\", \"code\": \"PATCH_FAILED\", \"details\": {}, \"message\": \"Patch must use *** Begin Patch / *** End Patch envelope.\", \"retryable\": false}, \"ok\": false}"
+      }
+    ],
+    "structuredContent": {
+      "ok": false,
+      "error": {
+        "code": "PATCH_FAILED",
+        "message": "Patch must use *** Begin Patch / *** End Patch envelope.",
+        "category": "validation",
+        "retryable": false,
+        "details": {}
+      }
+    },
+    "isError": true
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_9\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"error\\\": {\\\"category\\\": \\\"validation\\\", \\\"code\\\": \\\"PATCH_FAILED\\\", \\\"details\\\": {}, \\\"message\\\": \\\"Patch must use *** Begin Patch / *** End Patch envelope.\\\", \\\"retryable\\\": false}, \\\"ok\\\": false}\"}], \"structuredContent\": {\"ok\": false, \"error\": {\"code\": \"PATCH_FAILED\", \"message\": \"Patch must use *** Begin Patch / *** End Patch envelope.\", \"category\": \"validation\", \"retryable\": false, \"details\": {}}}, \"isError\": true}}",
+  "error": null,
+  "duration": 0.00017333030700683594
+}

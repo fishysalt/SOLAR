@@ -1,0 +1,28 @@
+{
+  "call_id": "20260621_204107_0032",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:53:32.704620",
+  "server_name": "FileSystem",
+  "tool_name": "read_text_file",
+  "arguments": {
+    "path": "E:/Agents/SOLAR_MA/test.txt",
+    "head": 3
+  },
+  "request_id": "FileSystem_5",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"FileSystem_5\", \"method\": \"tools/call\", \"params\": {\"name\": \"read_text_file\", \"arguments\": {\"path\": \"E:/Agents/SOLAR_MA/test.txt\", \"head\": 3}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "return test 333"
+      }
+    ],
+    "structuredContent": {
+      "content": "return test 333"
+    }
+  },
+  "raw_response": "{\"result\": {\"content\": [{\"type\": \"text\", \"text\": \"return test 333\"}], \"structuredContent\": {\"content\": \"return test 333\"}}, \"jsonrpc\": \"2.0\", \"id\": \"FileSystem_5\"}",
+  "error": null,
+  "duration": 0.004845380783081055
+}

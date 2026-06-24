@@ -1,0 +1,168 @@
+{
+  "call_id": "20260621_203236_0005",
+  "session_id": "20260621_203236",
+  "timestamp": "2026-06-21T20:33:11.165459",
+  "server_name": "CodeTools",
+  "tool_name": "list_dir",
+  "arguments": {
+    "path": "."
+  },
+  "request_id": "CodeTools_7",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_7\", \"method\": \"tools/call\", \"params\": {\"name\": \"list_dir\", \"arguments\": {\"path\": \".\"}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"entries\": [{\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-06T15:57:51.550752Z\", \"name\": \"-H\", \"path\": \"-H\", \"size_bytes\": 109, \"type\": \"file\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-13T05:50:36.020730Z\", \"name\": \"README.md\", \"path\": \"README.md\", \"size_bytes\": 216, \"type\": \"file\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-12T15:23:08.923628Z\", \"name\": \"conductor\", \"path\": \"conductor\", \"size_bytes\": 4096, \"type\": \"directory\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-12T11:35:26.744470Z\", \"name\": \"creator\", \"path\": \"creator\", \"size_bytes\": 4096, \"type\": \"directory\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-21T05:18:20.640742Z\", \"name\": \"engineer\", \"path\": \"engineer\", \"size_bytes\": 4096, \"type\": \"directory\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-12T11:12:18.796874Z\", \"name\": \"requirements.txt\", \"path\": \"requirements.txt\", \"size_bytes\": 755, \"type\": \"file\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-12T17:01:58.318600Z\", \"name\": \"scavenger\", \"path\": \"scavenger\", \"size_bytes\": 4096, \"type\": \"directory\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-18T04:46:10.744946Z\", \"name\": \"shared\", \"path\": \"shared\", \"size_bytes\": 4096, \"type\": \"directory\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-12T17:13:15.506050Z\", \"name\": \"start.py\", \"path\": \"start.py\", \"size_bytes\": 3113, \"type\": \"file\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-12T17:55:08.502394Z\", \"name\": \"test.py\", \"path\": \"test.py\", \"size_bytes\": 362, \"type\": \"file\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-21T06:36:19.598852Z\", \"name\": \"test.txt\", \"path\": \"test.txt\", \"size_bytes\": 15, \"type\": \"file\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-20T16:11:31.712842Z\", \"name\": \"test_notebook.ipynb\", \"path\": \"test_notebook.ipynb\", \"size_bytes\": 309, \"type\": \"file\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-01T08:59:50.420458Z\", \"name\": \"ui\", \"path\": \"ui\", \"size_bytes\": 0, \"type\": \"directory\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-01T08:59:50.444789Z\", \"name\": \"visualization\", \"path\": \"visualization\", \"size_bytes\": 0, \"type\": \"directory\"}, {\"is_hidden\": false, \"is_ignored\": false, \"modified\": \"2026-06-21T06:34:20.039283Z\", \"name\": \"workspace\", \"path\": \"workspace\", \"size_bytes\": 0, \"type\": \"directory\"}], \"ok\": true, \"path\": \".\", \"truncated\": false, \"warnings\": []}"
+      }
+    ],
+    "structuredContent": {
+      "path": ".",
+      "entries": [
+        {
+          "name": "-H",
+          "path": "-H",
+          "type": "file",
+          "size_bytes": 109,
+          "modified": "2026-06-06T15:57:51.550752Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "README.md",
+          "path": "README.md",
+          "type": "file",
+          "size_bytes": 216,
+          "modified": "2026-06-13T05:50:36.020730Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "conductor",
+          "path": "conductor",
+          "type": "directory",
+          "size_bytes": 4096,
+          "modified": "2026-06-12T15:23:08.923628Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "creator",
+          "path": "creator",
+          "type": "directory",
+          "size_bytes": 4096,
+          "modified": "2026-06-12T11:35:26.744470Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "engineer",
+          "path": "engineer",
+          "type": "directory",
+          "size_bytes": 4096,
+          "modified": "2026-06-21T05:18:20.640742Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "requirements.txt",
+          "path": "requirements.txt",
+          "type": "file",
+          "size_bytes": 755,
+          "modified": "2026-06-12T11:12:18.796874Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "scavenger",
+          "path": "scavenger",
+          "type": "directory",
+          "size_bytes": 4096,
+          "modified": "2026-06-12T17:01:58.318600Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "shared",
+          "path": "shared",
+          "type": "directory",
+          "size_bytes": 4096,
+          "modified": "2026-06-18T04:46:10.744946Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "start.py",
+          "path": "start.py",
+          "type": "file",
+          "size_bytes": 3113,
+          "modified": "2026-06-12T17:13:15.506050Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "test.py",
+          "path": "test.py",
+          "type": "file",
+          "size_bytes": 362,
+          "modified": "2026-06-12T17:55:08.502394Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "test.txt",
+          "path": "test.txt",
+          "type": "file",
+          "size_bytes": 15,
+          "modified": "2026-06-21T06:36:19.598852Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "test_notebook.ipynb",
+          "path": "test_notebook.ipynb",
+          "type": "file",
+          "size_bytes": 309,
+          "modified": "2026-06-20T16:11:31.712842Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "ui",
+          "path": "ui",
+          "type": "directory",
+          "size_bytes": 0,
+          "modified": "2026-06-01T08:59:50.420458Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "visualization",
+          "path": "visualization",
+          "type": "directory",
+          "size_bytes": 0,
+          "modified": "2026-06-01T08:59:50.444789Z",
+          "is_hidden": false,
+          "is_ignored": false
+        },
+        {
+          "name": "workspace",
+          "path": "workspace",
+          "type": "directory",
+          "size_bytes": 0,
+          "modified": "2026-06-21T06:34:20.039283Z",
+          "is_hidden": false,
+          "is_ignored": false
+        }
+      ],
+      "truncated": false,
+      "warnings": [],
+      "ok": true
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_7\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"entries\\\": [{\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-06T15:57:51.550752Z\\\", \\\"name\\\": \\\"-H\\\", \\\"path\\\": \\\"-H\\\", \\\"size_bytes\\\": 109, \\\"type\\\": \\\"file\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-13T05:50:36.020730Z\\\", \\\"name\\\": \\\"README.md\\\", \\\"path\\\": \\\"README.md\\\", \\\"size_bytes\\\": 216, \\\"type\\\": \\\"file\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-12T15:23:08.923628Z\\\", \\\"name\\\": \\\"conductor\\\", \\\"path\\\": \\\"conductor\\\", \\\"size_bytes\\\": 4096, \\\"type\\\": \\\"directory\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-12T11:35:26.744470Z\\\", \\\"name\\\": \\\"creator\\\", \\\"path\\\": \\\"creator\\\", \\\"size_bytes\\\": 4096, \\\"type\\\": \\\"directory\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-21T05:18:20.640742Z\\\", \\\"name\\\": \\\"engineer\\\", \\\"path\\\": \\\"engineer\\\", \\\"size_bytes\\\": 4096, \\\"type\\\": \\\"directory\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-12T11:12:18.796874Z\\\", \\\"name\\\": \\\"requirements.txt\\\", \\\"path\\\": \\\"requirements.txt\\\", \\\"size_bytes\\\": 755, \\\"type\\\": \\\"file\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-12T17:01:58.318600Z\\\", \\\"name\\\": \\\"scavenger\\\", \\\"path\\\": \\\"scavenger\\\", \\\"size_bytes\\\": 4096, \\\"type\\\": \\\"directory\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-18T04:46:10.744946Z\\\", \\\"name\\\": \\\"shared\\\", \\\"path\\\": \\\"shared\\\", \\\"size_bytes\\\": 4096, \\\"type\\\": \\\"directory\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-12T17:13:15.506050Z\\\", \\\"name\\\": \\\"start.py\\\", \\\"path\\\": \\\"start.py\\\", \\\"size_bytes\\\": 3113, \\\"type\\\": \\\"file\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-12T17:55:08.502394Z\\\", \\\"name\\\": \\\"test.py\\\", \\\"path\\\": \\\"test.py\\\", \\\"size_bytes\\\": 362, \\\"type\\\": \\\"file\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-21T06:36:19.598852Z\\\", \\\"name\\\": \\\"test.txt\\\", \\\"path\\\": \\\"test.txt\\\", \\\"size_bytes\\\": 15, \\\"type\\\": \\\"file\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-20T16:11:31.712842Z\\\", \\\"name\\\": \\\"test_notebook.ipynb\\\", \\\"path\\\": \\\"test_notebook.ipynb\\\", \\\"size_bytes\\\": 309, \\\"type\\\": \\\"file\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-01T08:59:50.420458Z\\\", \\\"name\\\": \\\"ui\\\", \\\"path\\\": \\\"ui\\\", \\\"size_bytes\\\": 0, \\\"type\\\": \\\"directory\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-01T08:59:50.444789Z\\\", \\\"name\\\": \\\"visualization\\\", \\\"path\\\": \\\"visualization\\\", \\\"size_bytes\\\": 0, \\\"type\\\": \\\"directory\\\"}, {\\\"is_hidden\\\": false, \\\"is_ignored\\\": false, \\\"modified\\\": \\\"2026-06-21T06:34:20.039283Z\\\", \\\"name\\\": \\\"workspace\\\", \\\"path\\\": \\\"workspace\\\", \\\"size_bytes\\\": 0, \\\"type\\\": \\\"directory\\\"}], \\\"ok\\\": true, \\\"path\\\": \\\".\\\", \\\"truncated\\\": false, \\\"warnings\\\": []}\"}], \"structuredContent\": {\"path\": \".\", \"entries\": [{\"name\": \"-H\", \"path\": \"-H\", \"type\": \"file\", \"size_bytes\": 109, \"modified\": \"2026-06-06T15:57:51.550752Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"README.md\", \"path\": \"README.md\", \"type\": \"file\", \"size_bytes\": 216, \"modified\": \"2026-06-13T05:50:36.020730Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"conductor\", \"path\": \"conductor\", \"type\": \"directory\", \"size_bytes\": 4096, \"modified\": \"2026-06-12T15:23:08.923628Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"creator\", \"path\": \"creator\", \"type\": \"directory\", \"size_bytes\": 4096, \"modified\": \"2026-06-12T11:35:26.744470Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"engineer\", \"path\": \"engineer\", \"type\": \"directory\", \"size_bytes\": 4096, \"modified\": \"2026-06-21T05:18:20.640742Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"requirements.txt\", \"path\": \"requirements.txt\", \"type\": \"file\", \"size_bytes\": 755, \"modified\": \"2026-06-12T11:12:18.796874Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"scavenger\", \"path\": \"scavenger\", \"type\": \"directory\", \"size_bytes\": 4096, \"modified\": \"2026-06-12T17:01:58.318600Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"shared\", \"path\": \"shared\", \"type\": \"directory\", \"size_bytes\": 4096, \"modified\": \"2026-06-18T04:46:10.744946Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"start.py\", \"path\": \"start.py\", \"type\": \"file\", \"size_bytes\": 3113, \"modified\": \"2026-06-12T17:13:15.506050Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"test.py\", \"path\": \"test.py\", \"type\": \"file\", \"size_bytes\": 362, \"modified\": \"2026-06-12T17:55:08.502394Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"test.txt\", \"path\": \"test.txt\", \"type\": \"file\", \"size_bytes\": 15, \"modified\": \"2026-06-21T06:36:19.598852Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"test_notebook.ipynb\", \"path\": \"test_notebook.ipynb\", \"type\": \"file\", \"size_bytes\": 309, \"modified\": \"2026-06-20T16:11:31.712842Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"ui\", \"path\": \"ui\", \"type\": \"directory\", \"size_bytes\": 0, \"modified\": \"2026-06-01T08:59:50.420458Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"visualization\", \"path\": \"visualization\", \"type\": \"directory\", \"size_bytes\": 0, \"modified\": \"2026-06-01T08:59:50.444789Z\", \"is_hidden\": false, \"is_ignored\": false}, {\"name\": \"workspace\", \"path\": \"workspace\", \"type\": \"directory\", \"size_bytes\": 0, \"modified\": \"2026-06-21T06:34:20.039283Z\", \"is_hidden\": false, \"is_ignored\": false}], \"truncated\": false, \"warnings\": [], \"ok\": true}, \"isError\": false}}",
+  "error": null,
+  "duration": 0.7402193546295166
+}

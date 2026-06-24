@@ -1,0 +1,35 @@
+{
+  "call_id": "20260621_204107_0012",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:42:03.156026",
+  "server_name": "CodeTools",
+  "tool_name": "view_image",
+  "arguments": {
+    "path": "engineer/freeweb/AGENTS.md"
+  },
+  "request_id": "CodeTools_14",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_14\", \"method\": \"tools/call\", \"params\": {\"name\": \"view_image\", \"arguments\": {\"path\": \"engineer/freeweb/AGENTS.md\"}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\": {\"category\": \"validation\", \"code\": \"BINARY_FILE\", \"details\": {}, \"message\": \"File is not a supported image.\", \"retryable\": false}, \"ok\": false}"
+      }
+    ],
+    "structuredContent": {
+      "ok": false,
+      "error": {
+        "code": "BINARY_FILE",
+        "message": "File is not a supported image.",
+        "category": "validation",
+        "retryable": false,
+        "details": {}
+      }
+    },
+    "isError": true
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_14\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"error\\\": {\\\"category\\\": \\\"validation\\\", \\\"code\\\": \\\"BINARY_FILE\\\", \\\"details\\\": {}, \\\"message\\\": \\\"File is not a supported image.\\\", \\\"retryable\\\": false}, \\\"ok\\\": false}\"}], \"structuredContent\": {\"ok\": false, \"error\": {\"code\": \"BINARY_FILE\", \"message\": \"File is not a supported image.\", \"category\": \"validation\", \"retryable\": false, \"details\": {}}}, \"isError\": true}}",
+  "error": null,
+  "duration": 0.07388544082641602
+}

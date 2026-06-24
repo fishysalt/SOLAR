@@ -1,0 +1,35 @@
+{
+  "call_id": "20260621_204107_0008",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:41:57.835097",
+  "server_name": "CodeTools",
+  "tool_name": "apply_patch",
+  "arguments": {
+    "patch": "*** Begin Patch\n--- a/test.txt\n+++ b/test.txt\n@@ -1 +1 @@\n-return test 333\n+patched by codetools\n*** End Patch"
+  },
+  "request_id": "CodeTools_10",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_10\", \"method\": \"tools/call\", \"params\": {\"name\": \"apply_patch\", \"arguments\": {\"patch\": \"*** Begin Patch\\n--- a/test.txt\\n+++ b/test.txt\\n@@ -1 +1 @@\\n-return test 333\\n+patched by codetools\\n*** End Patch\"}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\": {\"category\": \"validation\", \"code\": \"PATCH_FAILED\", \"details\": {}, \"message\": \"Unrecognized patch line: --- a/test.txt\", \"retryable\": false}, \"ok\": false}"
+      }
+    ],
+    "structuredContent": {
+      "ok": false,
+      "error": {
+        "code": "PATCH_FAILED",
+        "message": "Unrecognized patch line: --- a/test.txt",
+        "category": "validation",
+        "retryable": false,
+        "details": {}
+      }
+    },
+    "isError": true
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_10\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"error\\\": {\\\"category\\\": \\\"validation\\\", \\\"code\\\": \\\"PATCH_FAILED\\\", \\\"details\\\": {}, \\\"message\\\": \\\"Unrecognized patch line: --- a/test.txt\\\", \\\"retryable\\\": false}, \\\"ok\\\": false}\"}], \"structuredContent\": {\"ok\": false, \"error\": {\"code\": \"PATCH_FAILED\", \"message\": \"Unrecognized patch line: --- a/test.txt\", \"category\": \"validation\", \"retryable\": false, \"details\": {}}}, \"isError\": true}}",
+  "error": null,
+  "duration": 0.0002529621124267578
+}

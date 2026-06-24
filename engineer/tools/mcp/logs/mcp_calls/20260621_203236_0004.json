@@ -1,0 +1,42 @@
+{
+  "call_id": "20260621_203236_0004",
+  "session_id": "20260621_203236",
+  "timestamp": "2026-06-21T20:33:11.148954",
+  "server_name": "CodeTools",
+  "tool_name": "read_file",
+  "arguments": {
+    "path": "test.txt"
+  },
+  "request_id": "CodeTools_6",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_6\", \"method\": \"tools/call\", \"params\": {\"name\": \"read_file\", \"arguments\": {\"path\": \"test.txt\"}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"bytes_read\": 15, \"content\": \"return test 333\", \"encoding\": \"utf-8\", \"end_line\": 1, \"next_start_line\": null, \"ok\": true, \"output_bytes\": 15, \"output_lines\": 1, \"path\": \"test.txt\", \"start_line\": 1, \"total_bytes\": 15, \"total_lines\": 1, \"truncated\": false, \"truncated_by\": null, \"warnings\": []}"
+      }
+    ],
+    "structuredContent": {
+      "path": "test.txt",
+      "content": "return test 333",
+      "encoding": "utf-8",
+      "start_line": 1,
+      "end_line": 1,
+      "total_lines": 1,
+      "total_bytes": 15,
+      "bytes_read": 15,
+      "truncated": false,
+      "truncated_by": null,
+      "output_lines": 1,
+      "output_bytes": 15,
+      "next_start_line": null,
+      "warnings": [],
+      "ok": true
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_6\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"bytes_read\\\": 15, \\\"content\\\": \\\"return test 333\\\", \\\"encoding\\\": \\\"utf-8\\\", \\\"end_line\\\": 1, \\\"next_start_line\\\": null, \\\"ok\\\": true, \\\"output_bytes\\\": 15, \\\"output_lines\\\": 1, \\\"path\\\": \\\"test.txt\\\", \\\"start_line\\\": 1, \\\"total_bytes\\\": 15, \\\"total_lines\\\": 1, \\\"truncated\\\": false, \\\"truncated_by\\\": null, \\\"warnings\\\": []}\"}], \"structuredContent\": {\"path\": \"test.txt\", \"content\": \"return test 333\", \"encoding\": \"utf-8\", \"start_line\": 1, \"end_line\": 1, \"total_lines\": 1, \"total_bytes\": 15, \"bytes_read\": 15, \"truncated\": false, \"truncated_by\": null, \"output_lines\": 1, \"output_bytes\": 15, \"next_start_line\": null, \"warnings\": [], \"ok\": true}, \"isError\": false}}",
+  "error": null,
+  "duration": 0.0010266304016113281
+}

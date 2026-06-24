@@ -1,0 +1,37 @@
+{
+  "call_id": "20260621_204107_0009",
+  "session_id": "20260621_204107",
+  "timestamp": "2026-06-21T20:41:57.861853",
+  "server_name": "CodeTools",
+  "tool_name": "git_show",
+  "arguments": {
+    "rev": "HEAD"
+  },
+  "request_id": "CodeTools_11",
+  "raw_request": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_11\", \"method\": \"tools/call\", \"params\": {\"name\": \"git_show\", \"arguments\": {\"rev\": \"HEAD\"}}}",
+  "status": "completed",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"content\": \"commit a330e1add552283f348e7956552b7f0adb59c895\\nMerge: 029c549 b73e689\\nAuthor:     saltyfish <926347860@qq.com>\\nAuthorDate: Sat Jun 13 13:50:35 2026 +0800\\nCommit:     saltyfish <926347860@qq.com>\\nCommitDate: Sat Jun 13 13:50:35 2026 +0800\\n\\n    Merge branch 'main' of github.com:fishysalt/SOLAR\\n\\n\", \"files\": [], \"is_repo\": true, \"ok\": true, \"output_bytes\": 295, \"output_lines\": 10, \"rev\": \"HEAD\", \"truncated\": false, \"truncated_by\": null, \"warnings\": []}"
+      }
+    ],
+    "structuredContent": {
+      "is_repo": true,
+      "rev": "HEAD",
+      "content": "commit a330e1add552283f348e7956552b7f0adb59c895\nMerge: 029c549 b73e689\nAuthor:     saltyfish <926347860@qq.com>\nAuthorDate: Sat Jun 13 13:50:35 2026 +0800\nCommit:     saltyfish <926347860@qq.com>\nCommitDate: Sat Jun 13 13:50:35 2026 +0800\n\n    Merge branch 'main' of github.com:fishysalt/SOLAR\n\n",
+      "files": [],
+      "truncated": false,
+      "truncated_by": null,
+      "output_lines": 10,
+      "output_bytes": 295,
+      "warnings": [],
+      "ok": true
+    },
+    "isError": false
+  },
+  "raw_response": "{\"jsonrpc\": \"2.0\", \"id\": \"CodeTools_11\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"content\\\": \\\"commit a330e1add552283f348e7956552b7f0adb59c895\\\\nMerge: 029c549 b73e689\\\\nAuthor:     saltyfish <926347860@qq.com>\\\\nAuthorDate: Sat Jun 13 13:50:35 2026 +0800\\\\nCommit:     saltyfish <926347860@qq.com>\\\\nCommitDate: Sat Jun 13 13:50:35 2026 +0800\\\\n\\\\n    Merge branch 'main' of github.com:fishysalt/SOLAR\\\\n\\\\n\\\", \\\"files\\\": [], \\\"is_repo\\\": true, \\\"ok\\\": true, \\\"output_bytes\\\": 295, \\\"output_lines\\\": 10, \\\"rev\\\": \\\"HEAD\\\", \\\"truncated\\\": false, \\\"truncated_by\\\": null, \\\"warnings\\\": []}\"}], \"structuredContent\": {\"is_repo\": true, \"rev\": \"HEAD\", \"content\": \"commit a330e1add552283f348e7956552b7f0adb59c895\\nMerge: 029c549 b73e689\\nAuthor:     saltyfish <926347860@qq.com>\\nAuthorDate: Sat Jun 13 13:50:35 2026 +0800\\nCommit:     saltyfish <926347860@qq.com>\\nCommitDate: Sat Jun 13 13:50:35 2026 +0800\\n\\n    Merge branch 'main' of github.com:fishysalt/SOLAR\\n\\n\", \"files\": [], \"truncated\": false, \"truncated_by\": null, \"output_lines\": 10, \"output_bytes\": 295, \"warnings\": [], \"ok\": true}, \"isError\": false}}",
+  "error": null,
+  "duration": 0.09427022933959961
+}
