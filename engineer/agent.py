@@ -1,53 +1,61 @@
-"""engineer 核心逻辑 - 接入 LLM + 长期记忆 + RAG + 文件传输 + MCP 外部工具"""
-import asyncio
-import sys
+"""engineer Agent - ReAct异步任务系统（自进化引擎）"""
+
 import json
+import sys
+import asyncio
+import threading
+import concurrent.futures
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Optional, Dict, Any, List
+from datetime import datetime
 from openai import OpenAI
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from conductor.core.file_transfer import get_file_transfer
-from conductor.core.memory.agent_memory import AgentMemory
+from conductor.memory.agent_memory import AgentMemory
 from conductor.llm_config import get_llm_config
 from conductor.utils import log_with_timestamp
+
+from .models import Task, TaskStatus, SubtaskStatus, SubTask, CancelRequest
+from .utils import (
+    log_with_timestamp as log,
+    log_process,
+    is_task_cancelled,
+    mark_task_cancelled,
+    clear_cancelled_task,
+    send_callback
+)
 from .rag.knowledge_base import KnowledgeBase
 
 
-class engineerAgent:
-    
-    
+class EngineerAgent:
+    """engineer Agent - 自进化引擎，ReAct异步任务系统"""
+
     def __init__(self):
         self.name = "engineer"
-        self.display_name = "✨ engineer"
-        self.capabilities = [
-            "video_generation",
-            "model_generation", 
-            "web_search"
-        ]
-        
+        self.display_name = "🔧 Engineer"
+
         # 文件通道
         self.file_transfer = get_file_transfer()
-        
-        # 独立记忆系统
+
+        # 记忆系统
         memory_dir = Path(__file__).parent / "memory"
         
         # RAG 知识库
         rag_dir = Path(__file__).parent / "rag"
         self.knowledge_base = KnowledgeBase(rag_dir)
-        
+
         # LLM 配置
         self.llm_config = get_llm_config()
         if not self.llm_config.validate():
-            log_with_timestamp(self.name, "WARNING", "LLM API Key 未配置，将使用简单模式")
-        
-        # OpenAI 客户端
+            log(self.name, "WARNING", "LLM API Key 未配置")
+
         self.client = OpenAI(**self.llm_config.get_openai_kwargs())
         self.model = self.llm_config.model
         self.temperature = self.llm_config.temperature
-        
-        # 创建 LLM 摘要回调
+
+        # LLM 摘要回调
         def llm_summary_callback(prompt: str) -> str:
             try:
                 response = self.client.chat.completions.create(
@@ -58,247 +66,564 @@ class engineerAgent:
                 )
                 return response.choices[0].message.content
             except Exception as e:
-                log_with_timestamp(self.name, "WARNING", f"摘要生成失败: {e}")
+                log(self.name, "WARNING", f"摘要生成失败: {e}")
                 return None
-        
-        # 记忆系统（传入 LLM 回调）
+
         self.memory = AgentMemory(self.name, memory_dir, llm_callback=llm_summary_callback)
-        
-        # ========== 工具注册器（统一管理本地工具 + MCP 外部工具）==========
+
+        # 调试：输出记忆路径
+        print(f"🔍 [DEBUG] Engineer 记忆目录: {memory_dir}")
+        permanent_file = memory_dir / "permanent.yaml"
+        print(f"🔍 [DEBUG] Engineer permanent.yaml 是否存在: {permanent_file.exists()}")
+        if permanent_file.exists():
+            try:
+                with open(permanent_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    print(f"🔍 [DEBUG] Engineer permanent.yaml 内容长度: {len(content)} 字符")
+            except:
+                pass
+        test_prompt = self.memory.get_permanent_prompt()
+        print(f"🔍 [DEBUG] Engineer get_permanent_prompt() 长度: {len(test_prompt)} 字符")
+
+        # 工具注册器
         from .tools import get_tool_registry, init_engineer_tools
         self.tools = get_tool_registry()
-        
-        # init_engineer_tools() 会同时注册：
-        # 1. builtin 工具（记忆操作等本地工具）
-        # 2. MCP 外部工具（从 config.json 读取并自动发现）
         init_engineer_tools()
-        
-        self.current_task = None
+
+        # ========== 数据目录 ==========
         self.input_dir = Path(__file__).parent / "data" / "input"
         self.output_dir = Path(__file__).parent / "data" / "output"
         self.input_dir.mkdir(parents=True, exist_ok=True)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
-        log_with_timestamp(self.name, "INFO", f"初始化完成")
-        log_with_timestamp(self.name, "INFO", f"记忆目录: {memory_dir}")
-        log_with_timestamp(self.name, "INFO", f"RAG 目录: {rag_dir}")
-        log_with_timestamp(self.name, "INFO", f"输入目录: {self.input_dir}")
-        log_with_timestamp(self.name, "INFO", f"输出目录: {self.output_dir}")
-        log_with_timestamp(self.name, "INFO", f"RAG 文档数: {self.knowledge_base.get_stats()['document_count']}")
-        log_with_timestamp(self.name, "INFO", f"LLM 提供商: {self.llm_config.provider}")
-        log_with_timestamp(self.name, "INFO", f"LLM 模型: {self.model}")
-        log_with_timestamp(self.name, "INFO", f"已注册 {len(self.tools.list_tools())} 个工具（含 MCP 外部工具）")
-        log_with_timestamp(self.name, "INFO", f"能力: {', '.join(self.capabilities)}")
-    
-    def _retrieve_relevant_memories(self, query: str, limit: int = 5) -> List[Dict]:
-        """检索相关的长期记忆"""
-        return self.memory.search_long_term(keyword=query, limit=limit)
-    
-    def _retrieve_relevant_knowledge(self, query: str) -> List[Dict]:
+
+        # ========== 任务管理 ==========
+        self._tasks: Dict[str, Task] = {}
+        self._task_lock = threading.Lock()
+        self._task_counter = 0
+
+        # ========== 过程消息回调（调试用） ==========
+        self._process_callback = None
+
+        log(self.name, "INFO", f"初始化完成（ReAct异步任务系统）")
+        log(self.name, "INFO", f"记忆目录: {memory_dir}")
+        log(self.name, "INFO", f"RAG 文档数: {self.knowledge_base.get_stats()['document_count']}")
+        log(self.name, "INFO", f"LLM: {self.llm_config.provider}/{self.model}")
+        log(self.name, "INFO", f"已注册 {len(self.tools.list_tools())} 个工具")
+
+    # ========== 过程消息回调 ==========
+
+    def set_process_callback(self, callback):
+        """设置过程消息回调（调试用）"""
+        self._process_callback = callback
+        log(self.name, "INFO", "📡 过程消息回调已注册")
+
+    def _emit_process(self, content: str, emoji: str = "🔧"):
+        """发送过程消息"""
+        log_process(self.name, content, emoji)
+        if self._process_callback:
+            try:
+                self._process_callback(content, emoji)
+            except Exception as e:
+                log(self.name, "WARNING", f"过程回调失败: {e}")
+
+    # ========== 任务管理 ==========
+
+    def _generate_task_id(self) -> str:
+        with self._task_lock:
+            self._task_counter += 1
+            return f"eng_task_{self._task_counter:06d}"
+
+    def _get_task(self, task_id: str) -> Optional[Task]:
+        with self._task_lock:
+            return self._tasks.get(task_id)
+
+    def _update_task_status(self, task_id: str, status: TaskStatus):
+        with self._task_lock:
+            task = self._tasks.get(task_id)
+            if task:
+                task.status = status
+                task.updated_at = datetime.now()
+
+    def _create_task_with_id(self, task_id: str, user_id: str, instruction: str) -> Task:
         """
-        检索相关的 RAG 知识
-    
-        策略：
-        1. 先从 RAG 记录中搜索历史成功/失败经验
-        2. 再从静态知识库文件中检索
+        使用指定的task_id创建任务（由Conductor传入或UI生成）
+        初始化任务独立记忆
         """
-        from .tools.builtin.rag_manager import search_rag_structured
-    
-        results = []
-    
-        # 策略1：从 RAG 记录中搜索结构化经验
-        structured_results = search_rag_structured(query)
-        if structured_results:
-            log_with_timestamp(self.name, "INFO", f"📚 RAG 记录检索到 {len(structured_results)} 条相关经验")
-            for item in structured_results[:5]:
-                results.append({
-                    "source": f"rag_record_{item['category']}",
-                    "content": self._format_rag_record(item),
-                    "type": "experience",
-                    "structured": item
+        task = Task(task_id=task_id, user_id=user_id, instruction=instruction)
+
+        # ========== 初始化任务独立记忆 ==========
+        try:
+            permanent_prompt = self.memory.get_permanent_prompt()
+            all_messages = self.memory.short_term.get_messages()
+            recent_messages = all_messages[-5:] if len(all_messages) > 5 else all_messages
+
+            isolated = [
+                {"role": "system", "content": permanent_prompt},
+                {"role": "system", "content": "【以下是你执行任务时可以参考的最近对话上下文】"}
+            ]
+
+            for msg in recent_messages:
+                content = msg.get("content", "")
+                if len(content) > 500:
+                    content = content[:500] + "..."
+                isolated.append({
+                    "role": msg.get("role", "user"),
+                    "content": content
                 })
-    
-        # 策略2：从知识库文件中检索
-        kb_results = self.knowledge_base.search(query, top_k=3)
-        for item in kb_results:
-            results.append({
-                "source": item.get("source", "knowledge_base"),
-                "content": item.get("content", ""),
-                "type": "knowledge"
-            })
-    
-        if results:
-            log_with_timestamp(self.name, "INFO", f"📚 共检索到 {len(results)} 条相关知识")
-    
-        return results
-    
-    def _format_rag_record(self, record: Dict) -> str:
-        """格式化单条 RAG 记录为可读文本"""
-        status = "✅ 成功" if record.get("success") else "❌ 失败"
-        tool = record.get("tool", "unknown")
-        input_str = json.dumps(record.get("input", {}), ensure_ascii=False)[:200]
-    
-        lines = [f"**{status}** | 工具: `{tool}`"]
-        lines.append(f"参数: {input_str}")
-    
-        if record.get("success"):
-            output = record.get("output", "")[:200]
-            lines.append(f"结果: {output}")
-        else:
-            error = record.get("error", "")[:200]
-            lines.append(f"错误: {error}")
-    
-        if record.get("time"):
-            lines.append(f"时间: {record['time'][:16]}")
-    
-        return "\n".join(lines)
-    def _clean_response(self, text: str) -> str:
-        """清理响应中的工具调用标签"""
-        if not text:
-            return text
+
+            isolated.append({"role": "user", "content": instruction})
+            task.isolated_memory = isolated
+
+            log(self.name, "INFO", f"📋 任务独立记忆初始化: {len(isolated)} 条")
+
+        except Exception as e:
+            log(self.name, "WARNING", f"独立记忆初始化失败: {e}")
+            task.isolated_memory = [
+                {"role": "system", "content": self.memory.get_permanent_prompt()},
+                {"role": "user", "content": instruction}
+            ]
+
+        with self._task_lock:
+            self._tasks[task_id] = task
+
+        return task
+
+    # ========== 任务提交入口（供UI调用） ==========
+
+    def submit_task(self, user_id: str, instruction: str) -> str:
+        """
+        提交任务 - UI调用入口（同步方法）
         
-        import re
-        # 移除 <｜｜DSML｜｜tool_calls>...</｜｜DSML｜｜tool_calls> 块
-        pattern = r'<｜｜DSML｜｜tool_calls>.*?<｜｜DSML｜｜/tool_calls>'
-        text = re.sub(pattern, '', text, flags=re.DOTALL)
-        # 移除单独的标签
-        text = re.sub(r'<｜｜DSML｜｜invoke[^>]*>', '', text)
-        text = re.sub(r'</｜｜DSML｜｜invoke>', '', text)
-        text = re.sub(r'<｜｜DSML｜｜parameter[^>]*>', '', text)
-        text = re.sub(r'</｜｜DSML｜｜parameter>', '', text)
-        # 清理多余空行
-        text = re.sub(r'\n\s*\n', '\n\n', text)
-        return text.strip()
-    
-    def _build_system_prompt(self, user_query: str = "") -> str:
-        """构建系统提示 - 动态包含相关记忆、知识和工具"""
-        permanent_prompt = self.memory.get_permanent_prompt()
-    
-        # 检索相关长期记忆
-        relevant_memories = []
-        if user_query:
-            relevant_memories = self._retrieve_relevant_memories(user_query)
-            if relevant_memories:
-                log_with_timestamp(self.name, "INFO", f"🧠 检索到 {len(relevant_memories)} 条相关记忆")
-    
-        # 检索相关 RAG 知识
-        relevant_knowledge = []
-        if user_query:
-            relevant_knowledge = self._retrieve_relevant_knowledge(user_query)
-            if relevant_knowledge:
-                log_with_timestamp(self.name, "INFO", f"📚 检索到 {len(relevant_knowledge)} 条相关知识")
-    
-        # 获取工具摘要
-        tools_info = self.tools.get_tools_summary() if self.tools and self.tools.list_tools() else ""
-    
-        # 构建记忆部分
-        memory_section = ""
-        if relevant_memories:
-            memory_lines = ["## 相关记忆（用户之前告诉过你的信息）\n"]
-            for mem in relevant_memories:
-                memory_lines.append(f"- ID:{mem['id']} | [{mem['category']}] {mem['content']}")
-            memory_section = "\n".join(memory_lines)
-    
-        # 构建知识库部分
-        knowledge_section = ""
-        if relevant_knowledge:
-            knowledge_lines = ["## 相关经验与知识（请参考）\n"]
-            knowledge_lines.append("**重要提示**：以下是历史成功经验和知识库内容，请参考它们来完成任务。")
-            knowledge_lines.append("")
-    
-            for item in relevant_knowledge:
-                if item.get("type") == "experience":
-                    knowledge_lines.append(f"### 📝 历史经验")
-                    knowledge_lines.append(f"{item['content']}")
-                else:
-                    knowledge_lines.append(f"### 📚 知识库: {item['source']}")
-                    knowledge_lines.append(f"{item['content']}")
-                knowledge_lines.append("")
-    
-            knowledge_section = "\n".join(knowledge_lines)
-    
-        return f"""{permanent_prompt}
+        与 Conductor.submit_task 保持一致的设计：
+        - 同步方法，立即返回 task_id
+        - 内部启动后台异步任务
+        """
+        # 生成 task_id
+        with self._task_lock:
+            self._task_counter += 1
+            task_id = f"eng_task_{self._task_counter:06d}"
+        
+        # 创建任务
+        task = self._create_task_with_id(task_id, user_id, instruction)
+        task.callback_url = None  # UI 调用不需要回调
+        
+        log(self.name, "INFO", f"📋 任务已提交: {task_id} (用户: {user_id})")
+        
+        # 启动后台执行（不阻塞）
+        asyncio.create_task(self._execute_task(task_id))
+        
+        return task_id
 
-    {memory_section}
+    # ========== 核心：处理任务（供Conductor调用） ==========
 
-    {knowledge_section}
+    async def handle_task(
+        self,
+        instruction: str,
+        input_files: list = None,
+        task_id: str = None,
+        subtask_id: str = "",
+        callback_url: str = None,
+        user_id: str = "default"
+    ) -> Dict[str, Any]:
+        """
+        处理任务 - 由Conductor通过HTTP调用
+        
+        与 submit_task 的区别：
+        - 使用 Conductor 传入的 task_id
+        - 任务完成后发送回调
+        """
+        # 如果没有task_id，使用UI方式（兼容旧调用）
+        if not task_id:
+            task_id = self._generate_task_id()
+            log(self.name, "INFO", f"📥 收到任务（无task_id，自动生成）: {instruction[:50]}...")
+        else:
+            log(self.name, "INFO", f"📥 收到任务: {task_id} | {instruction[:50]}...")
 
-    {tools_info}
+        # 检查是否已被取消
+        if is_task_cancelled(task_id):
+            log(self.name, "INFO", f"⏹️ 任务 {task_id} 已被取消，跳过执行")
+            return {
+                "status": "cancelled",
+                "message": f"任务 {task_id} 已被取消",
+                "task_id": task_id
+            }
 
-    ## 你的能力
-    你是 engineer Agent，专门负责内容生成。你的能力包括：
-    1. 为其他agent生成新的工具
-    2. 错误诊断-查看错误日志，分析错误原因，提供修复建议
+        # 记录开始前的文件
+        before_files = set(self._list_output_files())
 
-    ## 错误诊断能力
+        # 处理输入文件
+        local_files = self._process_input_files(input_files or [])
 
-    你拥有 `diagnose_error` 工具，用于诊断和修复其他 Agent 的错误。
+        # 创建任务
+        task = self._create_task_with_id(task_id, user_id, instruction)
+        task.subtask_id = subtask_id
+        task.callback_url = callback_url
 
-    ### 诊断流程（自主决定）
+        # 添加到短期记忆
+        self.memory.add_short_term("user", instruction)
+        if local_files:
+            file_info = f"用户提供了输入文件: {[f.name for f in local_files]}"
+            self.memory.add_short_term("system", file_info)
 
-    当你收到一个错误 ID 时：
-    1. **调用 `diagnose_error(error_id)`** → 获取错误上下文
-    2. **分析错误** → 理解问题本质
-    3. **决定行动** → 根据需要调用工具
-    4. **执行修复** → 实施解决方案
-    5. **返回报告** → 说明诊断结果和修复方案
-    ### 重要原则
+        # ========== 执行任务（ReAct循环） ==========
+        self._emit_process(f"▶️ 开始执行任务: {task_id[:12]}...", "🚀")
+        self._update_task_status(task_id, TaskStatus.RUNNING)
 
-    - **不硬编码判断**：每次诊断都是独立的 LLM 推理
-    - **自主选择工具**：根据错误类型决定使用哪些工具
-    - **记录修复方案**：调用 `record_treatment` 记录修复结果
+        result = await self._execute_task(task_id)
 
-    ## 使用知识库的指引（重要）
-    - 当上面的「相关知识库信息」中有内容时，**优先使用这些知识**回答用户问题
-    - 知识库中的信息是经过验证的权威内容，不要自行编造替代
-    - 如果知识库信息足以回答问题，直接引用并说明来源
+        # 检查新文件
+        after_files = set(self._list_output_files())
+        new_files = list(after_files - before_files)
 
-    ## 使用工具和记忆的指引
-    - 当用户要求你记住某事时，使用 add_to_my_memory 工具存储到长期记忆
-    - 当用户询问之前的信息时，使用 search_my_memory 工具搜索记忆
-    - 当用户要求查看记忆列表时，使用 view_my_memory 工具
-    - 当用户要求忘记某事或删除记忆时，使用 delete_from_my_memory 工具
-    ## 工具使用优先级
-        1. **MCP 工具优先**：名称以 `mcp_` 开头的工具调用,如果存在能满
-        足同一功能的多个mcp工具，那就询问用户优先使用哪个（并且将选择存入长期记忆）
-        2. **本地工具备选**：如果 MCP 工具调用失败或不可用，再使用本地工具
-    ## RAG 知识库自更新规则
+        if result.get("status") == "success":
+            result["output_files"] = new_files
+        result["task_id"] = task_id
 
-    每次任务完成后，**必须**调用 `add_rag_record` 记录结果：
+        # 添加到短期记忆
+        self.memory.add_short_term("assistant", result.get("message", ""))
 
-    ## 记录格式
-    ```json
-    {{
-    "time": "当前时间",
-    "tool": "工具名称",
-    "input": {{"参数名": "参数值"}},
-    "success": true/false,
-    "output": "成功时的输出",
-    "error": "失败时的错误信息"
-    }}
-    ## 文件传输
-    - 如果用户提供了输入文件，它们会被放在输入目录中
-    - 如果你生成了输出文件，请放到输出目录，并在回复中说明文件名
+        # ========== 发送回调 ==========
+        if callback_url and task_id:
+            status = result.get("status", "error")
+            if status == "success":
+                await send_callback(
+                    callback_url=callback_url,
+                    task_id=task_id,
+                    subtask_id=subtask_id,
+                    status="completed",
+                    result=result.get("message", "任务完成"),
+                    output_files=new_files
+                )
+            elif status == "cancelled":
+                await send_callback(
+                    callback_url=callback_url,
+                    task_id=task_id,
+                    subtask_id=subtask_id,
+                    status="cancelled",
+                    error="用户取消"
+                )
+            else:
+                await send_callback(
+                    callback_url=callback_url,
+                    task_id=task_id,
+                    subtask_id=subtask_id,
+                    status="failed",
+                    error=result.get("error", "未知错误")
+                )
 
-    ## 回复风格
-    - 专业、友好、简洁
-    - 使用知识库信息时，可以说"根据知识库..."
-    - 使用记忆中的信息时，可以说"根据你之前提到的..."
+            clear_cancelled_task(task_id)
 
-    ## 当前时间
-    {__import__('datetime').datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-    """
-    
-    def _get_conversation_context(self) -> List[Dict]:
-        """获取对话上下文"""
-        return self.memory.get_short_term_context()
-    
+        log(self.name, "INFO", f"📤 任务完成: {result.get('status')}")
+        return result
+
+    # ========== ReAct 核心循环 ==========
+
+    async def _execute_task(self, task_id: str) -> Dict[str, Any]:
+        """ReAct循环执行任务"""
+        task = self._get_task(task_id)
+        if not task:
+            return {"status": "error", "error": f"任务不存在: {task_id}"}
+
+        try:
+            while task.iteration_count < task.max_iterations:
+                task.iteration_count += 1
+                self._emit_process(f"🔄 迭代 {task.iteration_count}/{task.max_iterations}")
+
+                # 检查取消
+                if is_task_cancelled(task_id):
+                    self._emit_process("⏹️ 任务已取消", "⏹️")
+                    return {"status": "cancelled", "message": "任务被取消"}
+
+                try:
+                    self._emit_process("🧠 思考中...", "🧠")
+                    decision = await self._decide_next_action(task)
+
+                    if decision is None:
+                        return {"status": "error", "error": "无法解析LLM决策"}
+
+                    action = decision.get("action", "unknown")
+
+                    # 发送决策消息
+                    if action == "reply":
+                        content = decision.get("content", "")[:80]
+                        self._emit_process(f"📋 决策: 直接回复 → {content}...", "💬")
+                    elif action == "call_tool":
+                        tool = decision.get("tool_name", "unknown")
+                        self._emit_process(f"📋 决策: 调用工具 {tool}", "🔧")
+                    elif action == "finish":
+                        result = decision.get("result", "")[:50]
+                        self._emit_process(f"📋 决策: 任务完成 ✅ → {result}", "✅")
+                    elif action == "fail":
+                        reason = decision.get("reason", "")[:50]
+                        self._emit_process(f"📋 决策: 任务失败 ❌ → {reason}", "❌")
+                    else:
+                        self._emit_process(f"📋 决策: {action}", "📋")
+
+                except Exception as e:
+                    log(self.name, "ERROR", f"LLM决策异常: {e}", error=True)
+                    return {"status": "error", "error": f"LLM决策异常: {str(e)}"}
+
+                # ========== 处理决策 ==========
+                action = decision.get("action")
+
+                if action == "finish":
+                    if not task.final_result:
+                        task.final_result = decision.get("result", "任务已完成")
+                    self._update_task_status(task_id, TaskStatus.COMPLETED)
+                    task.completed_at = datetime.now()
+                    self._emit_process(f"✅ 任务完成: {task.final_result[:50]}...", "✅")
+                    return {"status": "success", "message": task.final_result}
+
+                if action == "fail":
+                    task.error = decision.get("reason", "LLM决定终止任务")
+                    self._update_task_status(task_id, TaskStatus.FAILED)
+                    self._emit_process(f"❌ 任务失败: {task.error[:50]}", "❌")
+                    return {"status": "error", "error": task.error}
+
+                if action == "reply":
+                    reply = decision.get("content", "已处理")
+                    self._record_step(task, "reply", decision, reply)
+                    if not task.final_result:
+                        task.final_result = reply
+                    self.memory.add_short_term("assistant", reply)
+                    continue
+
+                if action == "call_tool":
+                    tool_name = decision.get("tool_name")
+                    tool_args = decision.get("args", {})
+
+                    if not tool_name:
+                        task.error = "缺少tool_name"
+                        self._update_task_status(task_id, TaskStatus.FAILED)
+                        return {"status": "error", "error": task.error}
+
+                    # 创建子任务记录
+                    subtask_id = f"{task_id}_sub_{len(task.subtasks)+1:03d}"
+                    subtask = SubTask(
+                        id=subtask_id,
+                        tool_name=tool_name,
+                        instruction=json.dumps(tool_args)[:200]
+                    )
+                    task.subtasks.append(subtask)
+
+                    # 执行工具
+                    subtask.status = SubtaskStatus.RUNNING
+                    subtask.started_at = datetime.now()
+                    self._emit_process(f"🔧 执行工具: {tool_name}", "🔧")
+
+                    try:
+                        result = self.tools.execute(tool_name, **tool_args)
+                        subtask.status = SubtaskStatus.COMPLETED
+                        subtask.result = result
+                        subtask.completed_at = datetime.now()
+                        self._emit_process(f"✅ 工具 {tool_name} 执行完成", "✅")
+                    except Exception as e:
+                        subtask.status = SubtaskStatus.FAILED
+                        subtask.error = str(e)
+                        subtask.completed_at = datetime.now()
+                        self._emit_process(f"❌ 工具 {tool_name} 失败: {str(e)[:50]}", "❌")
+
+                    task.updated_at = datetime.now()
+                    continue
+
+                # 未知action
+                task.error = f"未知操作: {action}"
+                self._update_task_status(task_id, TaskStatus.FAILED)
+                return {"status": "error", "error": task.error}
+
+            # 达到最大迭代次数
+            task.error = f"达到最大迭代次数 ({task.max_iterations})"
+            self._update_task_status(task_id, TaskStatus.FAILED)
+            return {"status": "error", "error": task.error}
+
+        except Exception as e:
+            log(self.name, "ERROR", f"任务执行异常: {task_id} - {e}", error=True)
+            return {"status": "error", "error": str(e)}
+
+    # ========== LLM 决策 ==========
+
+    async def _decide_next_action(self, task: Task) -> Optional[Dict[str, Any]]:
+        """LLM决定下一步行动"""
+        prompt = self._build_react_prompt(task)
+
+        # 提取固定记忆
+        permanent_prompt = ""
+        for msg in task.isolated_memory:
+            if msg.get("role") == "system":
+                content = msg.get("content", "")
+                if len(content) > 100 and "【" not in content and "】" not in content:
+                    permanent_prompt = content
+                    break
+
+        if not permanent_prompt:
+            permanent_prompt = self.memory.get_permanent_prompt()
+
+        # 获取可用工具列表
+        tools_summary = self.tools.get_tools_summary() if self.tools.list_tools() else "暂无可用工具"
+
+        def _sync_llm_call():
+            return self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": f"""{permanent_prompt}
+
+你是一个工程师Agent，负责执行任务。你可以调用工具来完成工作。
+
+可用工具：
+{tools_summary}
+
+可用操作：
+1. call_tool: 调用工具执行任务
+2. reply: 直接回复用户（不需要调用工具）
+3. finish: 任务已完成
+4. fail: 任务无法继续
+
+规则：
+- 如果任务很简单，可以直接reply完成
+- 如果需要工具帮助，使用call_tool
+- 每次只做一件事
+- 完成后用finish结束
+- 只返回JSON格式的决策"""},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.3,
+                max_tokens=600
+            )
+
+        try:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                loop = asyncio.get_event_loop()
+                response = await loop.run_in_executor(executor, _sync_llm_call)
+
+            content = response.choices[0].message.content
+            return self._parse_decision(content)
+
+        except Exception as e:
+            log(self.name, "ERROR", f"LLM决策失败: {e}", error=True)
+            return {"action": "fail", "reason": f"LLM调用失败: {str(e)}"}
+
+    def _build_react_prompt(self, task: Task) -> str:
+        """构建ReAct决策提示 - 使用任务独立记忆"""
+        # 提取上下文
+        context_lines = []
+        for msg in task.isolated_memory:
+            role = msg.get("role", "")
+            content = msg.get("content", "")
+            if role == "system":
+                if "【" in content and "】" in content:
+                    context_lines.append(f"[上下文] {content}")
+            elif role == "user":
+                if content != task.instruction:
+                    context_lines.append(f"用户: {content[:100]}")
+            elif role == "assistant":
+                context_lines.append(f"助手: {content[:100]}")
+
+        context_str = "\n".join(context_lines[-3:]) if context_lines else "无历史上下文"
+
+        # 历史步骤
+        history = ""
+        for step in task.reasoning_history[-5:]:
+            history += f"\n步骤 {step['step']}:\n"
+            history += f"  思考: {step.get('reasoning', '')}\n"
+            history += f"  执行: {step.get('action_display', '')}\n"
+            if step.get('result'):
+                history += f"  结果: {str(step['result'])[:100]}\n"
+
+        # 子任务状态
+        subtask_status = ""
+        for st in task.subtasks:
+            status_icon = {
+                SubtaskStatus.PENDING: "⏳",
+                SubtaskStatus.RUNNING: "▶️",
+                SubtaskStatus.WAITING: "⏳",
+                SubtaskStatus.COMPLETED: "✅",
+                SubtaskStatus.FAILED: "❌",
+                SubtaskStatus.CANCELLED: "⏹️"
+            }.get(st.status, "❓")
+            subtask_status += f"\n- {status_icon} {st.tool_name}: {st.instruction[:50]}"
+            if st.result:
+                subtask_status += f" → {str(st.result)[:50]}"
+
+        return f"""【任务】
+{task.instruction}
+
+【历史上下文】
+{context_str}
+
+【已完成步骤】
+{history or "还没有完成任何步骤"}
+
+【工具执行记录】
+{subtask_status or "还没有调用工具"}
+
+【当前状态】
+- 迭代次数: {task.iteration_count}/{task.max_iterations}
+- 任务状态: {task.status.value}
+
+【决策规则】
+1. 如果任务已经完成 → action: finish
+2. 如果任务无法继续 → action: fail
+3. 如果不需要调用工具，直接回复用户 → action: reply
+4. 如果需要调用工具 → action: call_tool
+
+【返回格式】
+只返回JSON，不要有其他内容。
+
+示例1（调用工具）:
+{{"action": "call_tool", "tool_name": "diagnose_error", "args": {{"error_id": "err_001"}}, "reasoning": "需要诊断错误"}}
+
+示例2（直接回复）:
+{{"action": "reply", "content": "好的，我来帮你处理这个任务。", "reasoning": "任务简单，不需要调用工具"}}
+
+示例3（任务完成）:
+{{"action": "finish", "result": "错误已修复完成", "reasoning": "所有步骤已完成"}}
+
+示例4（任务失败）:
+{{"action": "fail", "reason": "无法找到对应的工具", "reasoning": "所需工具不存在"}}"""
+
+    def _parse_decision(self, content: str) -> Optional[Dict[str, Any]]:
+        """解析LLM返回的决策"""
+        try:
+            start = content.find('{')
+            end = content.rfind('}') + 1
+            if start >= 0 and end > start:
+                return json.loads(content[start:end])
+        except json.JSONDecodeError as e:
+            log(self.name, "WARNING", f"JSON解析失败: {e}")
+
+        return {"action": "reply", "content": content[:200], "reasoning": "无法解析为结构化决策"}
+
+    def _record_step(self, task: Task, action: str, decision: Dict, result: Any = None):
+        """记录ReAct步骤"""
+        task.reasoning_history.append({
+            "step": len(task.reasoning_history) + 1,
+            "action": action,
+            "action_display": decision.get("tool_name", action) if action == "call_tool" else action,
+            "reasoning": decision.get("reasoning", ""),
+            "result": result
+        })
+
+    # ========== 取消任务 ==========
+
+    def cancel_task(self, task_id: str) -> bool:
+        """取消任务"""
+        mark_task_cancelled(task_id)
+
+        task = self._get_task(task_id)
+        if task:
+            task.status = TaskStatus.CANCELLED
+            task.updated_at = datetime.now()
+            log(self.name, "INFO", f"⏹️ 任务已取消: {task_id}")
+
+        return True
+
+    # ========== 原有方法 ==========
+
     def _process_input_files(self, input_files: List[str]) -> List[Path]:
-        """处理输入文件：从共享文件夹移动到本地输入目录"""
         local_files = []
         if not input_files:
             return local_files
-        
+
         for filename in input_files:
             dest = self.file_transfer.receive_file(
                 source_agent="conductor",
@@ -307,212 +632,29 @@ class engineerAgent:
             )
             if dest:
                 local_files.append(dest)
-                log_with_timestamp(self.name, "INFO", f"收到输入文件: {filename} -> {dest}")
+                log(self.name, "INFO", f"收到输入文件: {filename} -> {dest}")
             else:
-                log_with_timestamp(self.name, "WARNING", f"未找到输入文件: {filename}")
-        
+                log(self.name, "WARNING", f"未找到输入文件: {filename}")
+
         return local_files
-    
+
     def _list_input_files(self) -> List[str]:
-        """列出当前输入目录中的文件"""
         files = list(self.input_dir.glob("*"))
         return [f.name for f in files if f.is_file()]
-    
+
     def _list_output_files(self) -> List[str]:
-        """列出当前输出目录中的文件"""
         files = list(self.output_dir.glob("*"))
         return [f.name for f in files if f.is_file()]
-    
-    async def handle_task(self, instruction: str, input_files: list = None) -> Dict[str, Any]:
-        """
-        处理自然语言任务 - ReAct 循环版本
-        
-        新增机制：
-        - 重复工具调用检测：如果连续两次调用相同工具（相同 task_id），自动等待 10 秒
-        - 减少异步任务的无效轮询，降低 Token 消耗
-        """
-        log_with_timestamp(self.name, "INFO", f"📥 收到任务: {instruction[:100]}...")
-        
-        # 1. 记录开始前的文件
-        before_files = set(self._list_output_files())
-        
-        # 2. 处理输入文件
-        local_files = self._process_input_files(input_files or [])
-        
-        # 3. 添加到短期记忆
-        self.memory.add_short_term("user", instruction)
-        
-        if local_files:
-            file_info = f"用户提供了输入文件: {[f.name for f in local_files]}"
-            self.memory.add_short_term("system", file_info)
-        
-        # 4. 构建初始消息
-        messages = [
-            {"role": "system", "content": self._build_system_prompt(instruction)}
-        ]
-        context = self._get_conversation_context()
-        messages.extend(context)
-        
-        if local_files:
-            file_list = "\n".join([f"- {f.name}" for f in local_files])
-            messages.append({
-                "role": "system",
-                "content": f"用户上传了以下文件，你可以根据需要读取：\n{file_list}"
-            })
-        
-        messages.append({"role": "user", "content": instruction})
-        
-        # 5. ReAct 循环
-        max_iterations = 20
-        final_reply = ""
-        
-        # ========== 新增：重复检测状态 ==========
-        last_tool_call = None  # 记录上一次工具调用的签名
-        # =====================================
-        
-        for iteration in range(max_iterations):
-            log_with_timestamp(self.name, "INFO", f"🔄 ReAct 循环第 {iteration + 1} 轮")
-            
-            try:
-                response = self.client.chat.completions.create(
-                    model=self.model,
-                    messages=messages,
-                    tools=self.tools.get_schemas() if self.tools and self.tools.list_tools() else None,
-                    tool_choice="auto",
-                    temperature=self.temperature,
-                    max_tokens=self.llm_config.max_tokens
-                )
-                
-                message = response.choices[0].message
-                
-                # ========== 检测到最终回答：重置状态 ==========
-                if not message.tool_calls:
-                    final_reply = self._clean_response(message.content or "")
-                    log_with_timestamp(self.name, "INFO", f"✅ 任务完成，共 {iteration + 1} 轮")
-                    # 重置重复检测状态
-                    last_tool_call = None
-                    break
-                
-                # ========== 处理工具调用 ==========
-                log_with_timestamp(self.name, "INFO", f"🔧 调用 {len(message.tool_calls)} 个工具")
-                
-                # 添加 assistant 消息
-                assistant_msg = {
-                    "role": "assistant",
-                    "content": message.content or "",
-                    "tool_calls": [
-                        {
-                            "id": tc.id,
-                            "type": "function",
-                            "function": {
-                                "name": tc.function.name,
-                                "arguments": tc.function.arguments
-                            }
-                        }
-                        for tc in message.tool_calls
-                    ]
-                }
-                messages.append(assistant_msg)
-                
-                # 执行工具
-                for tool_call in message.tool_calls:
-                    tool_name = tool_call.function.name
-                    tool_args = json.loads(tool_call.function.arguments)
-                    
-                    # ========== 新增：重复检测与延迟 ==========
-                    # 构建当前调用的签名（工具名 + task_id）
-                    task_id = tool_args.get("task_id") or tool_args.get("taskId") or ""
-                    current_signature = f"{tool_name}:{task_id}"
-                    
-                    # 检查是否与上一次调用相同
-                    if last_tool_call and last_tool_call == current_signature:
-                        log_with_timestamp(self.name, "INFO", f"⏳ 检测到重复工具调用 ({tool_name}, task_id: {task_id})，等待 10 秒...")
-                        await asyncio.sleep(1)
-                        log_with_timestamp(self.name, "INFO", f"⏳ 等待完成，继续执行")
-                    
-                    # 执行工具
-                    log_with_timestamp(self.name, "INFO", f"🔧 执行工具: {tool_name}")
-                    result = self.tools.execute(tool_name, **tool_args)
-                    
-                    # 更新上一次调用记录
-                    last_tool_call = current_signature
-                    # ========================================
-                    
-                    messages.append({
-                        "tool_call_id": tool_call.id,
-                        "role": "tool",
-                        "content": result
-                    })
-                
-                # 继续下一轮循环
-                continue
-                
-            except Exception as e:
-                log_with_timestamp(self.name, "ERROR", str(e), error=True)
-                final_reply = f"❌ 处理出错: {str(e)}"
-                break
-        
-        # 6. 如果循环结束没有最终回复（达到最大迭代次数）
-        if not final_reply:
-            final_reply = "⚠️ 任务未完成，达到最大迭代次数"
-        
-        # 7. 清理响应
-        final_reply = self._clean_response(final_reply)
-        
-        # 8. 检查新文件
-        after_files = set(self._list_output_files())
-        new_files = list(after_files - before_files)
-        
-        result = {
-            "status": "success" if "❌" not in final_reply else "error",
-            "message": final_reply,
-            "capability_used": None,
-            "output_files": new_files
-        }
-        
-        # 9. 添加到短期记忆
-        self.memory.add_short_term("assistant", result["message"])
-        log_with_timestamp(self.name, "INFO", f"📤 任务完成，新生成文件: {new_files}")
-        
-        return result
-    
-    def _simple_handle(self, instruction: str) -> Dict[str, Any]:
-        """简单模式（无 LLM 时的降级）"""
-        before_files = set(self._list_output_files())
-        instruction_lower = instruction.lower()
-        
-        if "自我介绍" in instruction_lower or "介绍" in instruction_lower:
-            response = f"""✨ 你好！我是 engineer Agent，我的能力包括：
 
-1. **视频生成** - 根据描述生成视频内容
-2. **3D建模** - 生成 GLB 格式的 3D 模型
-3. **网页搜索** - 搜索互联网信息
+    # ========== 兼容旧接口 ==========
 
-目前这些功能正在开发中，敬请期待！"""
-        else:
-            # 尝试从知识库检索
-            knowledge = self.knowledge_base.search(instruction, top_k=1)
-            if knowledge:
-                response = f"根据知识库信息：\n\n{knowledge[0]['content']}\n\n（如需更详细的帮助，请等待功能完善）"
-            else:
-                response = f"⚠️ 收到任务：「{instruction}」\n\nengineer Agent 的功能正在开发中，暂时无法执行具体任务。"
-        after_files = set(self._list_output_files())
-        new_files = list(after_files - before_files)
-        return {
-            "status": "pending",
-            "message": response,
-            "capability_used": None,
-            "output_files": new_files
-        }
-    
     def get_status(self) -> Dict[str, Any]:
-        """获取状态"""
         tools_count = len(self.tools.list_tools()) if self.tools else 0
         return {
             "name": self.name,
             "display_name": self.display_name,
             "status": "active",
-            "capabilities": self.capabilities,
+            "capabilities": ["error_diagnosis", "tool_generation", "code_repair"],
             "memory_stats": self.memory.get_stats(),
             "rag_stats": self.knowledge_base.get_stats(),
             "tools_count": tools_count,
@@ -521,94 +663,78 @@ class engineerAgent:
             "input_files": self._list_input_files(),
             "output_files": self._list_output_files()
         }
-    
+
     # ========== 记忆管理方法 ==========
-    
+
     def delete_memory(self, memory_id: int) -> bool:
-        """删除单条长期记忆"""
         return self.memory.delete_long_term(memory_id)
-    
+
     def delete_memories_batch(self, ids: List[int]) -> int:
-        """批量删除长期记忆"""
         return self.memory.delete_long_term_batch(ids)
-    
+
     def clear_memory_by_category(self, category: str) -> int:
-        """按分类清空长期记忆"""
         return self.memory.clear_long_term_by_category(category)
-    
+
     def clear_all_memory(self) -> int:
-        """清空所有长期记忆"""
         return self.memory.clear_long_term()
-    
+
     def get_short_term_stats(self) -> dict:
-        """获取短期记忆统计"""
         return self.memory.get_short_term_stats()
-    
+
     def clear_short_term(self):
-        """清空短期记忆"""
         self.memory.clear_short_term()
-    
+
     # ========== RAG 管理方法 ==========
-    
+
     def add_knowledge_document(self, content: str, filename: str = None) -> str:
-        """添加知识文档"""
         return self.knowledge_base.add_document(content, filename)
-    
+
     def search_knowledge(self, query: str) -> List[Dict]:
-        """搜索知识库"""
         return self.knowledge_base.search(query)
-    
+
     def get_all_knowledge_documents(self) -> List[Dict]:
-        """获取所有知识文档"""
         return self.knowledge_base.get_all_documents()
-    
+
     def get_knowledge_document_content(self, filename: str) -> Optional[str]:
-        """获取知识文档内容"""
         return self.knowledge_base.get_document_content(filename)
-    
+
     def delete_knowledge_document(self, filename: str) -> bool:
-        """删除知识文档"""
         return self.knowledge_base.delete_document(filename)
-    
+
     def get_knowledge_stats(self) -> dict:
-        """获取知识库统计"""
         return self.knowledge_base.get_stats()
-    
+
     def reload_knowledge(self):
-        """重新加载知识库"""
         self.knowledge_base.reload()
-    
+
     # ========== 文件管理方法 ==========
-    
+
     def get_input_files(self) -> List[str]:
-        """获取输入文件列表"""
         return self._list_input_files()
-    
+
     def get_output_files(self) -> List[str]:
-        """获取输出文件列表"""
         return self._list_output_files()
-    
+
     def clear_input_files(self):
-        """清空输入目录"""
         for f in self.input_dir.iterdir():
             if f.is_file():
                 f.unlink()
-        log_with_timestamp(self.name, "INFO", "输入目录已清空")
-    
+        log(self.name, "INFO", "输入目录已清空")
+
     def clear_output_files(self):
-        """清空输出目录"""
         for f in self.output_dir.iterdir():
             if f.is_file():
                 f.unlink()
-        log_with_timestamp(self.name, "INFO", "输出目录已清空")
+        log(self.name, "INFO", "输出目录已清空")
 
 
-# 单例
+# ========== 单例 ==========
+
 _engineer = None
 
 
-def get_engineer() -> engineerAgent:
+def get_engineer() -> EngineerAgent:
     global _engineer
     if _engineer is None:
-        _engineer = engineerAgent()
+        _engineer = EngineerAgent()
     return _engineer

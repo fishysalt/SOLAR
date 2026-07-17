@@ -1,7 +1,11 @@
-"""Creator NiceGUI UI - 完全参考Conductor设计（无头像）"""
+"""Creator NiceGUI UI - 整合 API（同进程，共享 Creator 实例）"""
 
 import os
 import sys
+import threading
+import uvicorn
+import time
+import socket
 from pathlib import Path
 
 # 添加项目根目录到路径
@@ -15,7 +19,8 @@ from typing import Optional, Dict, Any, List
 # 直接导入Creator
 from creator.agent import get_creator
 
-# 导入组件
+# 导入组件（复用 conductor 的 avatar 组件）
+from conductor.ui.components.avatar import get_avatar_html, DEFAULT_EMOTION, EMOTION_MAPPING
 from creator.ui.components.task_list import create_task_list
 from creator.ui.components.task_detail import create_task_detail
 from creator.ui.components.memory_view import render_memory_view
@@ -24,8 +29,26 @@ from creator.ui.components.memory_view import render_memory_view
 # ========== 获取Creator实例 ==========
 
 creator = get_creator()
-USER_ID = "debug"
+USER_ID = "末"
 REFRESH_INTERVAL = 3
+
+import logging
+logging.getLogger("nicegui").setLevel(logging.ERROR)
+class IgnoreNiceGUIErrorFilter(logging.Filter):
+    """过滤掉特定的 NiceGUI 错误信息"""
+    def filter(self, record):
+        msg = record.getMessage()
+        # 忽略包含特定错误文本的日志
+        if "The parent slot of the element has been deleted." in msg:
+            return False
+        # 可以继续添加更多需要忽略的文本
+        return True
+
+# 将过滤器应用到 root logger，这样所有 logger 都会生效
+logging.getLogger().addFilter(IgnoreNiceGUIErrorFilter())
+# ========== 注入 Creator 实例到 API 模块 ==========
+import creator.api as api_module
+api_module._creator = creator  # 直接注入，避免重复初始化
 
 
 # ========== 状态管理 ==========
@@ -40,6 +63,7 @@ class UIState:
         # 数据
         self.tasks: List[Dict[str, Any]] = []
         self.messages: List[Dict[str, str]] = []
+        self.emotion: str = DEFAULT_EMOTION
         self.is_loading: bool = False
         self.error: Optional[str] = None
         
@@ -66,7 +90,7 @@ state = UIState()
 
 # ========== Creator 回调注册 ==========
 
-def on_process_message(content: str, emoji: str = "✨"):
+def on_process_message(content: str, emoji: str = "🤔"):
     """接收过程消息并添加到UI"""
     state.messages.append({"role": "process", "content": f"─── {emoji} {content} ───"})
     refresh_main_content()
@@ -91,6 +115,7 @@ def send_message(message: str) -> Optional[str]:
             "role": "assistant",
             "content": f"✅ 任务已创建: {task_id}\n\n⏳ 正在后台处理，请查看侧边栏任务状态..."
         })
+        state.emotion = "working"
         return task_id
     except Exception as e:
         error_msg = f"❌ 发送失败: {str(e)}"
@@ -172,16 +197,13 @@ def delete_rag_document(filename: str) -> bool:
 
 
 # ========== 全局容器 ==========
-# creator/ui/app.py
-
-# ========== 全局容器 ==========
 
 task_list_container = None
 main_container = None
-_refresh_lock = False  # 新增：防重入锁
+_refresh_lock = False
 
 
-def refresh_tasks():  
+def refresh_tasks():
     """刷新任务列表 - 防重入"""
     global _refresh_lock
     
@@ -225,6 +247,7 @@ def refresh_tasks():
         print(f"刷新任务列表异常: {e}")
     finally:
         _refresh_lock = False
+
 
 def show_task_detail(task_id: str):
     state.set_task_detail(task_id)
@@ -296,7 +319,8 @@ def create_chat_interface():
                     else:
                         ui.chat_message(
                             text=content,
-                            sent=False
+                            sent=False,
+                            avatar=get_avatar_html(state.emotion, 40)
                         )
         
         # 输入框固定底部
@@ -357,13 +381,49 @@ def render_memory_page():
     )
 
 
+# ========== 检查端口是否被占用 ==========
+
+def is_port_in_use(port: int) -> bool:
+    """检查端口是否被占用"""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.bind(('0.0.0.0', port))
+            return False
+        except OSError:
+            return True
+
+
+# ========== 启动 FastAPI（同进程） ==========
+
+def start_api():
+    """在后台线程启动 FastAPI（使用注入的 creator 实例）"""
+    # 检查端口是否被占用
+    if is_port_in_use(7861):
+        print(f"⚠️ 端口 7861 已被占用，跳过 API 启动")
+        return
+    
+    import uvicorn
+    from creator.api import app
+    
+    # 确保 API 使用注入的 creator 实例
+    # 注意：已经在模块顶部注入了 creator
+    
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=7861,
+        log_level="warning",
+        reload=False  # 禁用 reload，避免重复加载
+    )
+
+
 # ========== 主页面 ==========
 
 @ui.page("/")
 def main_page():
     global task_list_container, main_container
 
-    # 动态背景
+    # 动态背景（复用conductor的backgrounds）
     bg_path = Path(__file__).parent.parent.parent / "conductor" / "backgrounds" / "background.gif"
     if bg_path.exists():
         ui.add_body_html(f"""
@@ -386,9 +446,10 @@ def main_page():
         """)
 
     with ui.column().classes("nicegui-content w-full"):
-        # ===== 标题栏（无头像） =====
+        # ===== 标题栏 =====
         with ui.row().classes("w-full justify-between items-center p-2 border-b border-gray-200"):
             with ui.row().classes("items-center gap-4"):
+                ui.html(get_avatar_html(state.emotion, 50))
                 ui.label("✨ SOLAR_MA Creator").classes("text-2xl font-bold")
                 ui.label("v2.0").classes("text-sm text-gray-400")
 
@@ -441,6 +502,7 @@ def main_page():
         with ui.row().classes("w-full justify-between items-center p-2 border-t border-gray-200 text-xs text-gray-400"):
             ui.label(f"任务数: {len(state.tasks)}")
             ui.label(f"页面: {state.current_page}")
+            ui.label(f"情绪: {EMOTION_MAPPING.get(state.emotion, {}).get('name', '未知')}")
             if state.is_loading:
                 ui.label("⏳ 处理中...").classes("text-orange-500")
             elif state.error:
@@ -457,12 +519,27 @@ def main_page():
 
 if __name__ in {"__main__", "__mp_main__"}:
     print("=" * 50)
-    print("✨ SOLAR_MA Creator UI (NiceGUI)")
+    print("✨ SOLAR_MA Creator (API + UI 同进程)")
     print("=" * 50)
-    print("🔄 直接调用 Creator（同进程）")
-    print("🖥️  UI 地址: http://localhost:7961")
+    print("📡 API: http://localhost:7861  (供 Conductor 调用)")
+    print("🖥️  UI:  http://localhost:7961  (用户界面)")
+    print("=" * 50)
+    print("💡 按 Ctrl+C 停止")
     print("=" * 50)
 
+    # ========== 在后台线程启动 FastAPI ==========
+    api_thread = threading.Thread(target=start_api, daemon=True)
+    api_thread.start()
+    
+    # 等待一下让 API 启动
+    time.sleep(1)
+    
+    if not is_port_in_use(7861):
+        print("✅ FastAPI 已在后台启动 (端口 7861)")
+    else:
+        print("⚠️ FastAPI 启动失败，端口 7861 已被占用")
+
+    # ========== 启动 NiceGUI UI（主线程） ==========
     ui.run(
         host="0.0.0.0",
         port=7961,

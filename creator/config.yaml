@@ -33,5 +33,15 @@ communication:
 
 # 记忆配置
 memory:
+  summary_limit: 3
   short_term_window: 30
-  long_term_enabled: true
+  redis:
+    host: localhost
+    port: 6379
+    db: 0
+  mysql:
+    host: localhost
+    port: 3306
+    database: solar_ma
+    user: root
+    password: "666233"

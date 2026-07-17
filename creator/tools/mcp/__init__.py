@@ -1,7 +1,7 @@
 """MCP 工具模块 - 引入外部 MCP Server 工具"""
 
-from .client import MCPClient, MCPTool
-from .http_client import HTTPMCPClient
+from ....shared.tools.mcp.client import MCPClient, MCPTool
+from ....shared.tools.mcp.http_client import HTTPMCPClient
 from .manager import MCPServerManager, get_mcp_manager
 
 

@@ -39,7 +39,15 @@ class AgentRegistry:
                 "ui_port": 7962,
                 "capabilities": ["web_scraping", "data_extraction"],
                 "description": "网络爬虫、数据提取"
-            },            
+            },
+            "engineer": {
+                "name": "engineer",
+                "display_name": "🔧 Engineer",
+                "api_port": 7863,
+                "ui_port": 7963,
+                "capabilities": ["error_diagnosis", "tool_generation", "code_repair"],
+                "description": "错误诊断、工具生成、代码修复"
+            },
         }
         
         # 运行时状态（缓存，但每次操作前会刷新）
@@ -152,9 +160,23 @@ class AgentRegistry:
                 "error": str(e)
             }
     
-    async def send_task(self, agent_name: str, instruction: str, input_files: list = None) -> Dict[str, Any]:
+    # ========== 改造点：send_task 支持 task_id 和 callback_url ==========
+    
+    async def send_task(
+        self, 
+        agent_name: str, 
+        instruction: str, 
+        input_files: list = None,
+        # ========== 新增参数 ==========
+        task_id: str = None,
+        subtask_id: str = "",
+        callback_url: str = None,
+        user_id: str = "default"
+    ) -> Dict[str, Any]:
         """
         发送任务到 Agent（实时 HTTP 调用）
+        
+        支持 task_id 和 callback_url，让子Agent可以主动汇报
         """
         config = self._config.get(agent_name)
         if not config:
@@ -177,17 +199,31 @@ class AgentRegistry:
         session = await self._get_session()
         task_url = f"{api_url}/api/task"
         
+        # ========== 构建请求体（扩展） ==========
+        payload = {
+            "instruction": instruction,
+            "input_files": input_files or []
+        }
+        
+        # 新增字段：只有传入时才添加（保持向后兼容）
+        if task_id:
+            payload["task_id"] = task_id
+        if subtask_id:
+            payload["subtask_id"] = subtask_id
+        if callback_url:
+            payload["callback_url"] = callback_url
+        if user_id:
+            payload["user_id"] = user_id
+        
         print(f"🔵 [Registry] 发送任务到: {task_url}")
+        print(f"🔵 [Registry] task_id: {task_id}, callback: {callback_url or '无'}")
         print(f"🔵 [Registry] 指令: {instruction[:100]}...")
         
         try:
             async with session.post(
                 task_url,
-                json={
-                    "instruction": instruction,
-                    "input_files": input_files or []
-                },
-                timeout=aiohttp.ClientTimeout(total=60)
+                json=payload,
+                timeout=aiohttp.ClientTimeout(total=180)  # 增加超时时间，因为子Agent可能处理较长时间
             ) as resp:
                 if resp.status == 200:
                     result = await resp.json()
@@ -204,7 +240,12 @@ class AgentRegistry:
         except asyncio.TimeoutError:
             return {
                 "status": "error",
-                "error": f"请求超时 (60秒)，{agent_name} 可能正在处理大量任务"
+                "error": f"请求超时，{agent_name} 可能正在处理大量任务"
+            }
+        except aiohttp.ClientConnectorError as e:
+            return {
+                "status": "error",
+                "error": f"无法连接到 {agent_name}，请确保已启动"
             }
         except Exception as e:
             return {
@@ -212,6 +253,31 @@ class AgentRegistry:
                 "error": f"请求失败: {str(e)}"
             }
     
+    # ========== 新增：取消任务方法 ==========
+    async def cancel_task(self, agent_name: str, task_id: str) -> Dict[str, Any]:
+        """通知子Agent取消任务"""
+        config = self._config.get(agent_name)
+        if not config:
+            return {"status": "error", "error": f"未知 Agent: {agent_name}"}
+        
+        api_url = f"http://localhost:{config['api_port']}"
+        cancel_url = f"{api_url}/api/task/cancel"
+        
+        session = await self._get_session()
+        try:
+            async with session.post(
+                cancel_url,
+                json={"task_id": task_id, "reason": "user_cancelled"},
+                timeout=aiohttp.ClientTimeout(total=10)
+            ) as resp:
+                if resp.status == 200:
+                    return await resp.json()
+                else:
+                    error_text = await resp.text()
+                    return {"status": "error", "error": f"HTTP {resp.status}: {error_text[:200]}"}
+        except Exception as e:
+            return {"status": "error", "error": f"取消请求失败: {str(e)}"}
+        
     async def get_all_status(self) -> Dict[str, Dict]:
         """获取所有 Agent 的实时状态"""
         results = {}

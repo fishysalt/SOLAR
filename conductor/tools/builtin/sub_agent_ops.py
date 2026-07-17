@@ -1,64 +1,74 @@
-"""子 Agent 调用工具 - 使用注册表"""
+"""子Agent调用工具"""
 
-from conductor.agent import get_conductor
+from typing import Optional
+from ...agent import get_conductor
 
 
-def call_sub_agent(agent_name: str, instruction: str) -> str:
+def call_sub_agent_sync(agent_name: str, instruction: str) -> str:
     """
-    调用子 Agent 执行任务
-    
-    这是主 Agent 与子 Agent 通信的核心工具。
-    
-    Args:
-        agent_name: 子 Agent 名称，如 "creator"
-        instruction: 要执行的任务描述
-    
-    Returns:
-        子 Agent 的回复
+    同步调用子Agent（供工具使用）
     """
     conductor = get_conductor()
-    return conductor.call_sub_agent_sync(agent_name, instruction)
-
-
-def get_sub_agent_status(agent_name: str = None) -> str:
-    """
-    获取子 Agent 的运行状态
+    import asyncio
     
-    Args:
-        agent_name: 子 Agent 名称，不传则返回所有
-    """
+    async def _call():
+        from ...http_client import get_http_client
+        client = get_http_client()
+        result = await client.send_task(agent_name, instruction)
+        if result.get("status") == "success":
+            return result.get("message", "任务完成")
+        else:
+            return f"❌ 失败: {result.get('error', '未知错误')}"
+    
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                return executor.submit(asyncio.run, _call()).result()
+        else:
+            return loop.run_until_complete(_call())
+    except RuntimeError:
+        return asyncio.run(_call())
+
+
+def get_sub_agent_status_sync(agent_name: str) -> str:
+    """获取子Agent状态（同步）"""
+    import requests
     conductor = get_conductor()
-    return conductor.get_sub_agent_status_sync(agent_name)
+    config = conductor.registry._config.get(agent_name)
+    if not config:
+        return f"❌ 未知 Agent: {agent_name}"
+    
+    api_url = f"http://localhost:{config['api_port']}"
+    try:
+        resp = requests.get(f"{api_url}/api/health", timeout=3)
+        if resp.status_code == 200:
+            return f"✅ {agent_name}: 运行中\n   API: {api_url}"
+        else:
+            return f"❌ {agent_name}: 未响应 (HTTP {resp.status_code})"
+    except requests.exceptions.ConnectionError:
+        return f"❌ {agent_name}: 未启动 (无法连接 {api_url})"
+    except Exception as e:
+        return f"❌ {agent_name}: 错误 - {str(e)}"
 
 
-# 工具定义
+# ========== 工具定义（包含 func） ==========
+
 CALL_SUB_AGENT_TOOL = {
     "name": "call_sub_agent",
-    "description": """调用子 Agent 执行任务。
-
-使用场景：
-- 用户要求生成视频、3D模型 → 调用 creator
-- 任何需要专门能力的任务
-
-参数：
-- agent_name: 子 Agent 名称（如 creator）
-- instruction: 要执行的任务描述，要清晰具体
-
-示例：
-- agent_name="creator", instruction="请生成一个现代风格的椅子3D模型"
-""",
-    "func": call_sub_agent,
+    "description": "调用子Agent执行任务，适用于需要其他Agent能力的情况",
+    "func": call_sub_agent_sync,  # ← 关键：必须有
     "parameters": {
         "type": "object",
         "properties": {
             "agent_name": {
                 "type": "string",
-                "description": "子 Agent 名称",
-                "enum": ["creator","scavenger"]
+                "description": "子Agent名称: creator, scavenger, engineer"
             },
             "instruction": {
                 "type": "string",
-                "description": "要交给子 Agent 执行的任务描述"
+                "description": "要执行的任务描述"
             }
         },
         "required": ["agent_name", "instruction"]
@@ -67,16 +77,16 @@ CALL_SUB_AGENT_TOOL = {
 
 GET_SUB_AGENT_STATUS_TOOL = {
     "name": "get_sub_agent_status",
-    "description": "获取子 Agent 的运行状态（实时检测）",
-    "func": get_sub_agent_status,
+    "description": "获取子Agent的运行状态",
+    "func": get_sub_agent_status_sync,  # ← 关键：必须有
     "parameters": {
         "type": "object",
         "properties": {
             "agent_name": {
                 "type": "string",
-                "description": "子 Agent 名称，不传则返回所有"
+                "description": "子Agent名称"
             }
         },
-        "required": []
+        "required": ["agent_name"]
     }
 }

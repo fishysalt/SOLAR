@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from conductor.core.memory.agent_memory import AgentMemory
+from conductor.memory.agent_memory import AgentMemory
 
 
 class CreatorMemory(AgentMemory):

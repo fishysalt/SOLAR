@@ -1,3 +1,5 @@
-"""Creator Agent - 视频生成 + 3D建模 + 搜索"""
+# creator/__init__.py
 
 from .agent import CreatorAgent, get_creator
+
+__all__ = ["CreatorAgent", "get_creator"]

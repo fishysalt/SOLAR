@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from dotenv import load_dotenv
 
-from .client import MCPClient, MCPTool
+from ....shared.tools.mcp.client import MCPClient, MCPTool
 
 
 class MCPServerManager:
@@ -78,7 +78,7 @@ class MCPServerManager:
             return False
 
         try:
-            from .http_client import HTTPMCPClient
+            from ....shared.tools.mcp.http_client import HTTPMCPClient
 
             with open(config_path, 'r', encoding='utf-8') as f:
                 config = json.load(f)

@@ -5,14 +5,11 @@ from typing import Optional
 from dataclasses import dataclass
 from dotenv import load_dotenv
 
-
-# 加载 .env 文件
 load_dotenv()
 
 
 @dataclass
 class LLMConfig:
-    """LLM 配置"""
     provider: str
     api_key: str
     base_url: str
@@ -24,7 +21,6 @@ class LLMConfig:
     
     @classmethod
     def from_env(cls, provider: str = None) -> "LLMConfig":
-        """从环境变量加载配置"""
         if provider is None:
             provider = os.getenv("LLM_PROVIDER", "deepseek")
         
@@ -54,7 +50,6 @@ class LLMConfig:
             raise ValueError(f"不支持的 LLM 提供商: {provider}")
     
     def validate(self) -> bool:
-        """验证配置是否有效"""
         if not self.api_key:
             print(f"⚠️ 警告: {self.provider} API Key 未设置")
             return False
@@ -62,20 +57,23 @@ class LLMConfig:
     
     def get_openai_kwargs(self) -> dict:
         """获取 OpenAI 客户端参数"""
-        return {
-            "api_key": self.api_key,
+        kwargs = {
             "base_url": self.base_url,
             "timeout": self.timeout,
             "max_retries": self.max_retries
         }
+        if self.api_key:
+            kwargs["api_key"] = self.api_key
+        else:
+            # fallback：从环境变量读取
+            kwargs["api_key"] = os.getenv("OPENAI_API_KEY") or os.getenv("DEEPSEEK_API_KEY") or ""
+        return kwargs
 
 
-# 全局配置实例
 _default_config: Optional[LLMConfig] = None
 
 
 def get_llm_config(provider: str = None) -> LLMConfig:
-    """获取 LLM 配置（单例）"""
     global _default_config
     if _default_config is None or provider is not None:
         _default_config = LLMConfig.from_env(provider)
@@ -83,7 +81,6 @@ def get_llm_config(provider: str = None) -> LLMConfig:
 
 
 def reload_llm_config():
-    """重新加载配置（修改 .env 后调用）"""
     global _default_config
     load_dotenv(override=True)
     _default_config = LLMConfig.from_env()
